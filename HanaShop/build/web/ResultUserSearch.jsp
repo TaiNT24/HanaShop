@@ -1,21 +1,20 @@
 <%-- 
-    Document   : Home
-    Created on : Feb 14, 2020, 2:51:51 PM
+    Document   : ResultUserSearch
+    Created on : Feb 20, 2020, 11:02:00 AM
     Author     : nguye
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%--<%@include file="ImportBootstrap.html" %>--%>
 
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Home Page</title>
+        <title>Result search</title>
     </head>
-    <body >
-        <c:set var="products" value="${requestScope.LIST_PRODUCT}"/>
+    <body>
+        <c:set var="products" value="${requestScope.LIST_SEARCH}"/>
 
         <div class="container">
 
@@ -24,6 +23,10 @@
 
             <!--//Display-->
             <div class="main">
+                <c:if test="${empty products}" >
+                    <h2>There is no product match</h2>
+                </c:if>
+                    
                 <c:if test="${not empty products}">
                     <c:forEach var="product" items="${products}" >
                         <div class="card ">
@@ -34,9 +37,8 @@
 
                                 <h3 class="text-primary" style="float: left">Price: ${product.price}</h3>
 
-                                <c:set var="addToCart" value="AddToCart?itemID=${product.id}"/>
-                                <a class="btn btn-primary" style="float: right" 
-                                   href="${addToCart}" >
+                                <a href="#" class="btn btn-primary" 
+                                   style="float: right">
                                     Add to cart
                                 </a>
                                 <br>
@@ -45,15 +47,13 @@
                             </div>
                         </div>
                     </c:forEach>
-                    
+
                 </c:if>
             </div>
-            
-            
-            <!--Paging-->
-            
-        </div>
 
-        
+
+            <!--Paging-->
+
+        </div>
     </body>
 </html>

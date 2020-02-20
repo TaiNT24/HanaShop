@@ -7,26 +7,26 @@ package taint.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import javax.naming.NamingException;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import taint.model.account.AccountDAO;
+import taint.model.foodAndDrink.FoodAndDrinkDAO;
+import taint.model.foodAndDrink.FoodAndDrinkDTO;
 
 /**
  *
  * @author nguye
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
-public class LoginServlet extends HttpServlet {
+@WebServlet(name = "SearchServlet", urlPatterns = {"/SearchServlet"})
+public class SearchServlet extends HttpServlet {
 
-    private final String USER_PAGE = "StartupServlet";
-    private final String ADMIN_PAGE = "AdminStartupServlet";
-    private final String INVALID = "LoginPage";
-
+    private final String SEARCH_FAIL = "StartupServlet";
+    private final String SEARCH_SUCCESS = "ResultUserSearch.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,43 +41,49 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        String userID = request.getParameter("txtUserID");
-        String password = request.getParameter("txtPassword");
+        String searchVal = request.getParameter("searchVal");
+        String searchByFilter = request.getParameter("SearchByFilter");
+        String searchByCategory = request.getParameter("SearchByCategory");
+        String priceVal = request.getParameter("priceVal");
 
-        String url = INVALID;
+        String url = SEARCH_FAIL;
         try {
-            AccountDAO dao = new AccountDAO();
-            HttpSession session = request.getSession(true);
+            if (!searchVal.equals("") || searchByFilter != null) {
+                FoodAndDrinkDAO dao = new FoodAndDrinkDAO();
+                ArrayList<FoodAndDrinkDTO> listSearch;
 
-            if (userID != null && password != null) {
-                int roleAccount = dao.checkLogin(userID, password);
-                
-                if (roleAccount != -1) {
-                    
-                    if (roleAccount == 0) {
-                        url = USER_PAGE;
+                if (searchByFilter != null) {
+                    if (!searchByFilter.equals("Price")) {
+                        
+                        if (!searchByCategory.equals("Category")) {
+                            listSearch
+                                    = dao.userSearchByCategory(searchVal, searchByCategory, 1);
 
+                        } else { // choose filter, but not choose category => search by name
+                            listSearch = dao.userSearchByName(searchVal, 1);
+                        }
+                        
                     } else {
-                        url = ADMIN_PAGE;
+                        int price = Integer.parseInt(priceVal);
+                        int fromPrice = price - 5;
+                        int toPrice = price + 5;
+
+                        listSearch = dao.userSearchByPrice(searchVal, fromPrice, toPrice, 1);
                     }
-
-                    String userName = dao.getUserName(userID);
-
-                    session.setAttribute("USER_ID", userID);
-                    session.setAttribute("USERNAME", userName);
-                    session.setAttribute("ROLE", roleAccount);
-
-                } else {
-                    session.setAttribute("ERROR_LOGIN", "error");
+                } else { // no filter => search by name
+                    listSearch = dao.userSearchByName(searchVal, 1);
                 }
+                request.setAttribute("LIST_SEARCH", listSearch);
+                url = SEARCH_SUCCESS;
             }
 
         } catch (SQLException ex) {
-            log("SQLException_Login", ex.getCause());
+            log("SQLException_SearchServlet", ex.getCause());
         } catch (NamingException ex) {
-            log("NamingException_Login", ex.getCause());
-        }finally {
-            response.sendRedirect(url);
+            log("NamingException_SearchServlet", ex.getCause());
+        } finally {
+            RequestDispatcher rd = request.getRequestDispatcher(url);
+            rd.forward(request, response);
         }
     }
 

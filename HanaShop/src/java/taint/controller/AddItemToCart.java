@@ -6,28 +6,23 @@
 package taint.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import javax.naming.NamingException;
+import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import taint.model.account.AccountDAO;
 
 /**
  *
  * @author nguye
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
-public class LoginServlet extends HttpServlet {
-
-    private final String USER_PAGE = "StartupServlet";
-    private final String ADMIN_PAGE = "AdminStartupServlet";
-    private final String INVALID = "LoginPage";
-
-
+@WebServlet(name = "AddItemToCart", urlPatterns = {"/AddItemToCart"})
+public class AddItemToCart extends HttpServlet {
+    
+    private final String LOGIN_PAGE = "LoginPage";
+    private final String ADD_TO_CART = "";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -40,44 +35,17 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
-        String userID = request.getParameter("txtUserID");
-        String password = request.getParameter("txtPassword");
-
-        String url = INVALID;
+        
+        String itemID = request.getParameter("itemID");
+        
+        String url = LOGIN_PAGE;
         try {
-            AccountDAO dao = new AccountDAO();
-            HttpSession session = request.getSession(true);
-
-            if (userID != null && password != null) {
-                int roleAccount = dao.checkLogin(userID, password);
-                
-                if (roleAccount != -1) {
-                    
-                    if (roleAccount == 0) {
-                        url = USER_PAGE;
-
-                    } else {
-                        url = ADMIN_PAGE;
-                    }
-
-                    String userName = dao.getUserName(userID);
-
-                    session.setAttribute("USER_ID", userID);
-                    session.setAttribute("USERNAME", userName);
-                    session.setAttribute("ROLE", roleAccount);
-
-                } else {
-                    session.setAttribute("ERROR_LOGIN", "error");
-                }
-            }
-
-        } catch (SQLException ex) {
-            log("SQLException_Login", ex.getCause());
-        } catch (NamingException ex) {
-            log("NamingException_Login", ex.getCause());
-        }finally {
-            response.sendRedirect(url);
+            int id = Integer.parseInt(itemID);
+            
+            
+        }finally{
+            RequestDispatcher rd = request.getRequestDispatcher(url);
+            rd.forward(request, response);
         }
     }
 

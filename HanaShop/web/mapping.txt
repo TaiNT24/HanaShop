@@ -1,6 +1,10 @@
+LoginPage=Login.jsp
 loginAction=LoginServlet
+Logout=LogoutServlet
 RegisterNewAccount=RegisterNewAccount.jsp
 registerAccountAction=RegisterServlet
+searchAction=SearchServlet
+AddToCart=AddItemToCart
 loginsuccess.html=loginsuccess.html
 login.css=login.css
 StartupServlet=StartupServlet

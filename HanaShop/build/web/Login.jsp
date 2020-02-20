@@ -6,20 +6,19 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@include file="ImportBootstrap.html" %>
+
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
-        
-
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    
         <title>Login</title>
     </head>
     <body>
         <div class="container">
+            <jsp:include page="NavBar.jsp" />
+            
+            <!--Login form-->
             <div class="small-form">
-
                 <h1>Login page </h1>
 
                 <div class="form-login">
