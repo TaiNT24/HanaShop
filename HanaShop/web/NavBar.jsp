@@ -40,6 +40,7 @@ and open the template in the editor.
                 </li>
             </ul>
 
+            <!--.-->
             <ul class="navbar-nav" style="margin-left: 45%">
 
                 <!--Not Login yet-->
@@ -58,7 +59,7 @@ and open the template in the editor.
                         <div class="dropdown">
                             <button type="button" class="btn btn-primary dropdown-toggle"  
                                     data-toggle="dropdown">
-                                Welcome: Tai
+                                Welcome: ${sessionScope.USERNAME}
                             </button>
 
                             <div class="dropdown-menu" >
@@ -76,8 +77,11 @@ and open the template in the editor.
                         </div>                   
                     </li>
 
+                    <c:url var="yourCart" value="ShoppingCart">
+                        <c:param name="userID" value="${USER_ID}" />
+                    </c:url>
                     <li class="nav-item" style="margin-left: 1em">
-                        <a href="#Cart" class="btn btn-info">
+                        <a href="${yourCart}" class="btn btn-info">
                             Shopping Cart
                         </a>
                     </li>

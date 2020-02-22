@@ -69,12 +69,28 @@ a:active {
     /*border: 2px solid lavender;*/
     margin: 2em 0;
     background-color: lavender;
-    height: 10em;
 }
 .image-custome{
-    margin: auto 0;
+    margin: 1em 0;
+    width: 100%;
 }
 
 #RangeOfMoney{
     display: none;
+}
+.checkout-custom{
+    height: 20em;
+    margin-left: 3em;
+    position: sticky;
+    z-index: 1;
+    top: 80px;
+    background: #eee;
+    overflow-x: hidden;
+    padding: 8px 0;
+}
+
+.content-checkout{
+    width: 70%;
+    margin-left: 15%;
+    margin-top:3em;
 }

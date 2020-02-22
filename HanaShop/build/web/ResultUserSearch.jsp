@@ -26,7 +26,7 @@
                 <c:if test="${empty products}" >
                     <h2>There is no product match</h2>
                 </c:if>
-                    
+
                 <c:if test="${not empty products}">
                     <c:forEach var="product" items="${products}" >
                         <div class="card ">
@@ -37,10 +37,26 @@
 
                                 <h3 class="text-primary" style="float: left">Price: ${product.price}</h3>
 
-                                <a href="#" class="btn btn-primary" 
-                                   style="float: right">
-                                    Add to cart
-                                </a>
+                                <form action="AddToCart">
+                                    <input type="hidden" name="itemID" 
+                                           value="${product.id}" />
+                                    
+                                    <input type="hidden" name="searchVal" 
+                                           value="${param.searchVal}" />
+                                    <input type="hidden" name="SearchByFilter" 
+                                           value="${param.SearchByFilter}" />
+                                    <input type="hidden" name="SearchByCategory" 
+                                           value="${param.SearchByCategory}" />
+                                    <input type="hidden" name="priceVal" 
+                                           value="${param.priceVal}" />
+                                    
+                                    <button class="btn btn-primary"
+                                            type="submit" style="float: right">
+                                        Add to cart
+                                    </button>
+                                </form>
+
+
                                 <br>
                                 <br>
                                 <span class="badge badge-success">Available</span>

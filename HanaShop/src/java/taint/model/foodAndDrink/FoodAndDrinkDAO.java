@@ -231,7 +231,7 @@ public class FoodAndDrinkDAO {
     }
 
     public ArrayList<FoodAndDrinkDTO>
-            userSearchByPrice(String searchVal, int fromPrice,int toPrice, int page)
+            userSearchByPrice(String searchVal, int fromPrice, int toPrice, int page)
             throws SQLException, NamingException {
         Connection con = null;
         PreparedStatement preStm = null;
@@ -281,7 +281,7 @@ public class FoodAndDrinkDAO {
                     price = rs.getFloat("Price");
                     quantity = rs.getInt("Quantity");
                     category = rs.getString("Category");
-                    
+
                     FoodAndDrinkDTO dto = new FoodAndDrinkDTO(id, foodName, img,
                             description, price, quantity, category);
 
@@ -303,4 +303,107 @@ public class FoodAndDrinkDAO {
         }
         return listSearch;
     }
+
+    public float getPriceFood(int FoodID) throws NamingException, SQLException{
+        Connection con = null;
+        PreparedStatement preStm = null;
+        ResultSet rs = null;
+        
+        String sqlQuery = "select Price from FoodAndDrink "
+                + "where FoodID=?";
+        try{
+            con = DBUtils.connectDB();
+            
+            if(con!= null){
+                preStm = con.prepareStatement(sqlQuery);
+                
+                preStm.setInt(1, FoodID);
+                
+                rs = preStm.executeQuery();
+                if(rs.next()){
+                    return rs.getFloat("Price");
+                }
+            }
+        }finally{
+            if (rs != null) {
+                rs.close();
+            }
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return 0;
+    }
+    
+    public String getImgFood(int FoodID) throws NamingException, SQLException{
+        Connection con = null;
+        PreparedStatement preStm = null;
+        ResultSet rs = null;
+        
+        String sqlQuery = "select Img from FoodAndDrink "
+                + "where FoodID=?";
+        try{
+            con = DBUtils.connectDB();
+            
+            if(con!= null){
+                preStm = con.prepareStatement(sqlQuery);
+                
+                preStm.setInt(1, FoodID);
+                
+                rs = preStm.executeQuery();
+                if(rs.next()){
+                    return rs.getString("Img");
+                }
+            }
+        }finally{
+            if (rs != null) {
+                rs.close();
+            }
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return null;
+    }
+    
+    public String getNameFood(int FoodID) throws NamingException, SQLException{
+        Connection con = null;
+        PreparedStatement preStm = null;
+        ResultSet rs = null;
+        
+        String sqlQuery = "select FoodName from FoodAndDrink "
+                + "where FoodID=?";
+        try{
+            con = DBUtils.connectDB();
+            
+            if(con!= null){
+                preStm = con.prepareStatement(sqlQuery);
+                
+                preStm.setInt(1, FoodID);
+                
+                rs = preStm.executeQuery();
+                if(rs.next()){
+                    return rs.getString("FoodName");
+                }
+            }
+        }finally{
+            if (rs != null) {
+                rs.close();
+            }
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return null;
+    }
+    
 }

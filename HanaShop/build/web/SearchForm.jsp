@@ -20,7 +20,7 @@
             <div style=" margin: 2em;">
                 <form action="searchAction" method="POST">
                     <input class="form-control mr-sm-2" type="text" 
-                           name="searchVal" value="${param.searchVal}"
+                           name="searchVal" value="${sessionScope.searchVal}"
                            placeholder="Product's name">
 
                     <button class="btn btn-success" type="submit"
@@ -44,8 +44,8 @@
                             <input type="radio" id="Category" class="form-check-input"
                                    onclick="HideRangePrice()" 
                                    name="SearchByFilter" value="Category"
-                                   <c:if test="${not (param.SearchByCategory eq 'Category'
-                                                 or empty param.SearchByCategory )}">
+                                   <c:if test="${not (sessionScope.SearchByCategory eq 'Category'
+                                                 or empty sessionScope.SearchByCategory )}">
                                          checked
                                    </c:if>
                                    />
@@ -66,7 +66,7 @@
                             <option id="CategoryOption">Category</option>
                             <c:forEach var="category" items="${categories}">
                                 <option
-                                    <c:if test="${param.SearchByCategory eq category}">
+                                    <c:if test="${sessionScope.SearchByCategory eq category}">
                                         selected                                    
                                     </c:if>
                                     >
@@ -81,7 +81,7 @@
                             <input type="radio" id="Price" name="SearchByFilter" value="Price"
                                    onclick="ShowRangePrice()"
                                    class="form-check-input"
-                                   <c:if test="${param.SearchByFilter eq 'Price'}">
+                                   <c:if test="${sessionScope.SearchByFilter eq 'Price'}">
                                        checked
                                    </c:if>
                                    />
@@ -95,17 +95,17 @@
 
                         </div>
 
-                        <c:if test="${param.SearchByFilter eq 'Price'}">
+                        <c:if test="${sessionScope.SearchByFilter eq 'Price'}">
                             <c:set var="display" value="display:block" />
                         </c:if>
                         <div id="RangeOfMoney" style="margin-left: 1em;${display}">
                             <input type="range" min="5" max="50" 
                                    class="custom-range" id="customRange" 
-                                   name="priceVal" value="${param.priceVal}"
+                                   name="priceVal" value="${sessionScope.priceVal}"
                                    />
                             <p id="priceVal">
-                                <c:if test="${param.SearchByFilter eq 'Price'}">
-                                    Price: ${param.priceVal-5}-${param.priceVal+5}$
+                                <c:if test="${sessionScope.SearchByFilter eq 'Price'}">
+                                    Price: ${sessionScope.priceVal-5}-${sessionScope.priceVal+5}$
                                 </c:if>
                             </p>
 
@@ -115,6 +115,7 @@
 
                     <br>
                 </form>
+
                 <hr style="border: 1px solid darkcyan"/>
             </div>
         </div>
@@ -148,17 +149,20 @@
             function ShowRangePrice() {
                 var price = document.getElementById("Price");
                 var rangePrice = document.getElementById("RangeOfMoney");
+                var category = document.getElementById("CategoryOption");
 
                 if (price.checked) {
                     rangePrice.style.display = "block";
+                    category.selected = "true";
                 }
+                
             }
 
             function HideRangePrice() {
                 var rangePrice = document.getElementById("RangeOfMoney");
                 var category = document.getElementById("listCategory");
                 var categoryRadio = document.getElementById("Category");
-                
+
                 rangePrice.style.display = "none";
 
                 if (category.value !== "Category") {

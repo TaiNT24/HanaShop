@@ -6,23 +6,31 @@
 package taint.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.SQLException;
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import taint.model.cart.CartDAO;
+import taint.model.foodAndDrink.FoodAndDrinkDAO;
+import taint.model.itemsInCart.ItemsInCartDAO;
+import taint.model.itemsInCart.ItemsInCartDTO;
 
 /**
  *
  * @author nguye
  */
-@WebServlet(name = "AddItemToCart", urlPatterns = {"/AddItemToCart"})
-public class AddItemToCart extends HttpServlet {
-    
-    private final String LOGIN_PAGE = "LoginPage";
-    private final String ADD_TO_CART = "";
+@WebServlet(name = "AddItemToCartServlet", urlPatterns = {"/AddItemToCartServlet"})
+public class AddItemToCartServlet extends HttpServlet {
+
+    private final String LOGIN_PAGE = "Login.jsp";
+    private final String BACK_HOME = "StartupServlet";
+    private final String BACK_SEARCH = "SearchServlet";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -35,15 +43,56 @@ public class AddItemToCart extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
+
         String itemID = request.getParameter("itemID");
+
+        HttpSession session = request.getSession();
         
+        String searchVal = (String) session.getAttribute("searchVal");
+        String searchByFilter = (String) session.getAttribute("SearchByFilter");
+        String searchByCategory = (String) session.getAttribute("SearchByCategory");
+
         String url = LOGIN_PAGE;
         try {
-            int id = Integer.parseInt(itemID);
-            
-            
-        }finally{
+
+            String userID = (String) session.getAttribute("USER_ID");
+
+            if (userID != null) {
+                int id = Integer.parseInt(itemID);
+
+                CartDAO dao = new CartDAO();
+
+                int cartID = dao.getCurrentCartIDOfUser(userID);
+                boolean isNewCart = false;
+                if (cartID == -1) {
+                    isNewCart = dao.createNewCartForUser(userID);
+                }
+                if (isNewCart) {
+                    cartID = dao.getCurrentCartIDOfUser(userID);
+                }
+
+                FoodAndDrinkDAO foodAndDrinkDAO = new FoodAndDrinkDAO();
+                float price = foodAndDrinkDAO.getPriceFood(id);
+                
+                
+                ItemsInCartDTO itemsDTO = 
+                        new ItemsInCartDTO(id, price, 1, price, cartID);
+                
+                ItemsInCartDAO itemsInCartDAO = new ItemsInCartDAO();
+                itemsInCartDAO.addAItem(itemsDTO);
+                url = BACK_HOME;
+
+                if (!searchVal.equals("") || searchByFilter != null
+                        || !searchByCategory.equals("Category")) {
+                    url = BACK_SEARCH;
+                }
+            }
+
+        } catch (NamingException ex) {
+            log("NamingException_AddItemToCartServlet", ex.getCause());
+        } catch (SQLException ex) {
+            log("SQLException_AddItemToCartServlet", ex.getCause());
+        } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
         }

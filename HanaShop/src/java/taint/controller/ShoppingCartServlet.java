@@ -6,8 +6,11 @@
 package taint.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,19 +18,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import taint.model.foodAndDrink.FoodAndDrinkDAO;
-import taint.model.foodAndDrink.FoodAndDrinkDTO;
+import taint.model.cart.CartDAO;
+import taint.model.itemsInCart.ItemsInCartDAO;
+import taint.model.itemsInCart.ItemsInCartDTO;
 
 /**
  *
  * @author nguye
  */
-@WebServlet(name = "SearchServlet", urlPatterns = {"/SearchServlet"})
-public class SearchServlet extends HttpServlet {
-
-    private final String SEARCH_FAIL = "StartupServlet";
-    private final String SEARCH_SUCCESS = "ResultUserSearch.jsp";
+@WebServlet(name = "ShoppingCartServlet", urlPatterns = {"/ShoppingCartServlet"})
+public class ShoppingCartServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,55 +42,34 @@ public class SearchServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        String searchVal = request.getParameter("searchVal");
-        String searchByFilter = request.getParameter("SearchByFilter");
-        String searchByCategory = request.getParameter("SearchByCategory");
-        String priceVal = request.getParameter("priceVal");
+        String userID = request.getParameter("userID");
 
-        String url = SEARCH_FAIL;
         try {
-            HttpSession session = request.getSession();
 
-            if (!searchVal.equals("") || searchByFilter != null) {
-                session.setAttribute("searchVal", searchVal);
-
-                FoodAndDrinkDAO dao = new FoodAndDrinkDAO();
-                ArrayList<FoodAndDrinkDTO> listSearch;
-
-                if (searchByFilter != null) {
-                    session.setAttribute("SearchByFilter", searchByFilter);
-                    if (!searchByFilter.equals("Price")) {
-
-                        if (!searchByCategory.equals("Category")) {
-                            session.setAttribute("SearchByCategory", searchByCategory);
-                            listSearch
-                                    = dao.userSearchByCategory(searchVal, searchByCategory, 1);
-
-                        } else { // choose filter, but not choose category => search by name
-                            listSearch = dao.userSearchByName(searchVal, 1);
-                        }
-
-                    } else {
-                        int price = Integer.parseInt(priceVal);
-                        int fromPrice = price - 5;
-                        int toPrice = price + 5;
-                        session.setAttribute("priceVal", priceVal);
-
-                        listSearch = dao.userSearchByPrice(searchVal, fromPrice, toPrice, 1);
-                    }
-                } else { // no filter => search by name
-                    listSearch = dao.userSearchByName(searchVal, 1);
-                }
-                request.setAttribute("LIST_SEARCH", listSearch);
-                url = SEARCH_SUCCESS;
+            CartDAO cartDAO = new CartDAO();
+            int cartID = cartDAO.getCurrentCartIDOfUser(userID);
+            boolean isNewCart = false;
+            if (cartID == -1) {
+                isNewCart = cartDAO.createNewCartForUser(userID);
             }
+            if (isNewCart) {
+                cartID = cartDAO.getCurrentCartIDOfUser(userID);
+            }
+            
+            ItemsInCartDAO itemsDAO = new ItemsInCartDAO();
+            ArrayList<ItemsInCartDTO> listItems = 
+                    itemsDAO.loadAllItemsOfCart(cartID);
+            //set img and name for food
+            listItems = itemsDAO.setDetailItemsInCart(listItems);
+            
+            request.setAttribute("LIST_ITEMS_IN_CART", listItems);
 
-        } catch (SQLException ex) {
-            log("SQLException_SearchServlet", ex.getCause());
         } catch (NamingException ex) {
-            log("NamingException_SearchServlet", ex.getCause());
+            log("NamingException_ShoppingCartServlet", ex.getCause());
+        } catch (SQLException ex) {
+            log("SQLException_ShoppingCartServlet", ex.getCause());
         } finally {
-            RequestDispatcher rd = request.getRequestDispatcher(url);
+            RequestDispatcher rd = request.getRequestDispatcher("");
             rd.forward(request, response);
         }
     }

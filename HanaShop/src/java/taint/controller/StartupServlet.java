@@ -16,6 +16,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import taint.model.category.CategoryDAO;
 import taint.model.foodAndDrink.FoodAndDrinkDAO;
 import taint.model.foodAndDrink.FoodAndDrinkDTO;
@@ -43,7 +44,16 @@ public class StartupServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         String url = HOME_PAGE;
+
         try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.removeAttribute("searchVal");
+                session.removeAttribute("SearchByFilter");
+                session.removeAttribute("SearchByCategory");
+                session.removeAttribute("priceVal");
+            }
+
             FoodAndDrinkDAO dao = new FoodAndDrinkDAO();
             CategoryDAO cateDAO = new CategoryDAO();
 //trang 1
@@ -55,11 +65,9 @@ public class StartupServlet extends HttpServlet {
             //set page
             ServletContext sc = request.getServletContext();
             sc.setAttribute("LIST_CATEGORY", listCate);
-            
+
 //            ArrayList<Integer> pageList = dao.getSizeOfActiveArticle();
-
 //            sc.setAttribute("PAGES_COUNT", pageList);
-
         } catch (SQLException ex) {
             log("SQLException_StartupServlet", ex.getCause());
         } catch (NamingException ex) {

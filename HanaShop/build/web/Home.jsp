@@ -34,7 +34,10 @@
 
                                 <h3 class="text-primary" style="float: left">Price: ${product.price}</h3>
 
-                                <c:set var="addToCart" value="AddToCart?itemID=${product.id}"/>
+                                <c:url var="addToCart" value="AddToCart">
+                                    <c:param name="itemID" value="${product.id}"/>
+                                </c:url>
+                                
                                 <a class="btn btn-primary" style="float: right" 
                                    href="${addToCart}" >
                                     Add to cart
