@@ -44,10 +44,11 @@ public class AddItemToCartServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        String itemID = request.getParameter("itemID");
+        String foodIDStr = request.getParameter("foodID");
+
 
         HttpSession session = request.getSession();
-        
+
         String searchVal = (String) session.getAttribute("searchVal");
         String searchByFilter = (String) session.getAttribute("SearchByFilter");
         String searchByCategory = (String) session.getAttribute("SearchByCategory");
@@ -58,7 +59,7 @@ public class AddItemToCartServlet extends HttpServlet {
             String userID = (String) session.getAttribute("USER_ID");
 
             if (userID != null) {
-                int id = Integer.parseInt(itemID);
+                int foodID = Integer.parseInt(foodIDStr);
 
                 CartDAO dao = new CartDAO();
 
@@ -72,26 +73,34 @@ public class AddItemToCartServlet extends HttpServlet {
                 }
 
                 FoodAndDrinkDAO foodAndDrinkDAO = new FoodAndDrinkDAO();
-                float price = foodAndDrinkDAO.getPriceFood(id);
-                
-                
-                ItemsInCartDTO itemsDTO = 
-                        new ItemsInCartDTO(id, price, 1, price, cartID);
-                
+                float price = foodAndDrinkDAO.getPriceFood(foodID);
+
                 ItemsInCartDAO itemsInCartDAO = new ItemsInCartDAO();
-                itemsInCartDAO.addAItem(itemsDTO);
+
+                int quantity = itemsInCartDAO.checkExistedItem(foodID, cartID);
+                if (quantity != -1) {
+                    itemsInCartDAO.updateQuantity(foodID, cartID, quantity);
+                }else{
+                    ItemsInCartDTO itemsDTO
+                            = new ItemsInCartDTO(foodID, price, 1, price, cartID);
+
+                    itemsInCartDAO.addAItem(itemsDTO);
+                }
+
                 url = BACK_HOME;
 
                 if (!searchVal.equals("") || searchByFilter != null
                         || !searchByCategory.equals("Category")) {
                     url = BACK_SEARCH;
                 }
+                
             }
 
         } catch (NamingException ex) {
             log("NamingException_AddItemToCartServlet", ex.getCause());
         } catch (SQLException ex) {
             log("SQLException_AddItemToCartServlet", ex.getCause());
+            System.out.println(ex);
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);

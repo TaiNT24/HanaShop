@@ -78,7 +78,7 @@ and open the template in the editor.
                     </li>
 
                     <c:url var="yourCart" value="ShoppingCart">
-                        <c:param name="userID" value="${USER_ID}" />
+                        <c:param name="userID" value="${sessionScope.USER_ID}" />
                     </c:url>
                     <li class="nav-item" style="margin-left: 1em">
                         <a href="${yourCart}" class="btn btn-info">

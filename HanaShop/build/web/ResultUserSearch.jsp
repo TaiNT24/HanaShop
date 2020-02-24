@@ -38,7 +38,7 @@
                                 <h3 class="text-primary" style="float: left">Price: ${product.price}</h3>
 
                                 <form action="AddToCart">
-                                    <input type="hidden" name="itemID" 
+                                    <input type="hidden" name="foodID" 
                                            value="${product.id}" />
                                     
                                     <input type="hidden" name="searchVal" 

@@ -87,6 +87,7 @@ public class ItemsInCartDAO implements Serializable {
                     price = rs.getFloat("Price");
                     quantity = rs.getInt("Quantity");
                     totalPrice = rs.getFloat("TotalPrice");
+                    totalPrice = Math.round(totalPrice*10)/10.0F;
 
                     itemDTO = new ItemsInCartDTO(foodID, price, quantity,
                             totalPrice, cartID);
@@ -126,6 +127,149 @@ public class ItemsInCartDAO implements Serializable {
         }
 
         return listItems;
+    }
+
+    public int checkExistedItem(int foodID, int cartID)
+            throws NamingException, SQLException {
+        Connection con = null;
+        PreparedStatement preStm = null;
+        ResultSet rs = null;
+
+        String sqlQuery = "select Quantity "
+                + "from ItemsInCart "
+                + "where FoodID = ? and CartID = ?";
+        try {
+            con = DBUtils.connectDB();
+            if (con != null) {
+                preStm = con.prepareStatement(sqlQuery);
+
+                preStm.setInt(1, foodID);
+                preStm.setInt(2, cartID);
+
+                rs = preStm.executeQuery();
+
+                if (rs.next()) {
+                    return rs.getInt("Quantity");
+                }
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return -1;
+    }
+
+    public boolean updateQuantity(int foodID, int cartID, int quantity)
+            throws NamingException, SQLException {
+        Connection con = null;
+        PreparedStatement preStm = null;
+
+        String sqlQuery = "update ItemsInCart "
+                + "set Quantity = ? "
+                + "where FoodID = ? and CartID =?";
+        try {
+            con = DBUtils.connectDB();
+            if (con != null) {
+                preStm = con.prepareStatement(sqlQuery);
+
+                preStm.setInt(1, quantity + 1);
+                preStm.setInt(2, foodID);
+                preStm.setInt(3, cartID);
+
+                int row = preStm.executeUpdate();
+
+                if (row > 0) {
+
+                    return true;
+                }
+            }
+        } finally {
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return false;
+    }
+
+    public boolean updateQuantity(int foodID, int cartID, int quantity, boolean decreItem)
+            throws NamingException, SQLException {
+        Connection con = null;
+        PreparedStatement preStm = null;
+
+        String sqlQuery = "update ItemsInCart "
+                + "set Quantity = ? "
+                + "where FoodID = ? and CartID =?";
+        try {
+            if (decreItem) {
+                con = DBUtils.connectDB();
+                if (con != null) {
+                    preStm = con.prepareStatement(sqlQuery);
+
+                    preStm.setInt(1, quantity - 1);
+                    preStm.setInt(2, foodID);
+                    preStm.setInt(3, cartID);
+
+                    int row = preStm.executeUpdate();
+
+                    if (row > 0) {
+
+                        return true;
+                    }
+                }
+            }
+        } finally {
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return false;
+    }
+
+    public boolean updateNewQuantity(int foodID, int cartID, int newQuantity)
+            throws NamingException, SQLException {
+        Connection con = null;
+        PreparedStatement preStm = null;
+
+        String sqlQuery = "update ItemsInCart "
+                + "set Quantity = ? "
+                + "where FoodID = ? and CartID =?";
+        try {
+            con = DBUtils.connectDB();
+            if (con != null) {
+                preStm = con.prepareStatement(sqlQuery);
+
+                preStm.setInt(1, newQuantity);
+                preStm.setInt(2, foodID);
+                preStm.setInt(3, cartID);
+
+                int row = preStm.executeUpdate();
+
+                if (row > 0) {
+                    return true;
+                }
+            }
+        } finally {
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return false;
     }
 
 }

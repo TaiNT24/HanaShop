@@ -35,7 +35,7 @@
                                 <h3 class="text-primary" style="float: left">Price: ${product.price}</h3>
 
                                 <c:url var="addToCart" value="AddToCart">
-                                    <c:param name="itemID" value="${product.id}"/>
+                                    <c:param name="foodID" value="${product.id}"/>
                                 </c:url>
                                 
                                 <a class="btn btn-primary" style="float: right" 
