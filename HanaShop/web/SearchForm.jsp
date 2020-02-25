@@ -155,7 +155,6 @@
                     rangePrice.style.display = "block";
                     category.selected = "true";
                 }
-                
             }
 
             function HideRangePrice() {

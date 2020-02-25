@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @author nguye
  */
 public class CartDTO implements Serializable{
-    private int id;
+    private int cartID;
     private String userID;
     private float total;
     private String payment;
@@ -28,12 +28,12 @@ public class CartDTO implements Serializable{
         this.buyDate = buyDate;
     }
 
-    public int getId() {
-        return id;
+    public int getCartID() {
+        return cartID;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCartID(int cartID) {
+        this.cartID = cartID;
     }
 
     public String getUserID() {

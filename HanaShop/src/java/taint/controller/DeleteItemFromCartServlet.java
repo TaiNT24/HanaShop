@@ -7,7 +7,6 @@ package taint.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,20 +14,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import taint.model.cart.CartDAO;
 import taint.model.itemsInCart.ItemsInCartDAO;
-import taint.model.itemsInCart.ItemsInCartDTO;
 
 /**
  *
  * @author nguye
  */
-@WebServlet(name = "ShoppingCartServlet", urlPatterns = {"/ShoppingCartServlet"})
-public class ShoppingCartServlet extends HttpServlet {
-
-    private final String CHECKOUT_PAGE = "CheckoutCart.jsp";
-
+@WebServlet(name = "DeleteItemFromCartServlet", urlPatterns = {"/DeleteItemFromCartServlet"})
+public class DeleteItemFromCartServlet extends HttpServlet {
+    private final String DELETE_SUCCESS = "ShoppingCartServlet";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -41,68 +35,21 @@ public class ShoppingCartServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
-        String userID = request.getParameter("userID");
-        String foodIDStr = request.getParameter("foodID");
-        String quantityItem = request.getParameter("quantityItem");
         
-
-        String url = CHECKOUT_PAGE;
+        String itemIDStr = request.getParameter("itemID");
+        
         try {
-
-            CartDAO cartDAO = new CartDAO();
-            int cartID = cartDAO.getCurrentCartIDOfUser(userID);
-            boolean isNewCart = false;
-            if (cartID == -1) {
-                isNewCart = cartDAO.createNewCartForUser(userID);
-            }
-            if (isNewCart) {
-                cartID = cartDAO.getCurrentCartIDOfUser(userID);
-            }
+            int itemID = Integer.parseInt(itemIDStr);
             
-            ItemsInCartDAO itemsInCartDAO = new ItemsInCartDAO();
-            if (foodIDStr != null) {
-                int foodID = Integer.parseInt(foodIDStr);
-
-                String btnAction = request.getParameter("btnAction");
-
-                int quantity = itemsInCartDAO.checkExistedItem(foodID, cartID);
-                int newQuantity = Integer.parseInt(quantityItem);
-                
-                if(newQuantity==quantity){
-                    if (btnAction.equals("decreItem")) {
-                        if (quantity != -1) {
-                            itemsInCartDAO.updateQuantity(foodID, cartID, quantity, true);
-                        }
-                    } else {
-                        if (quantity != -1) {
-                            itemsInCartDAO.updateQuantity(foodID, cartID, quantity);
-                        }
-                    }
-                }else{
-                    itemsInCartDAO.updateNewQuantity(foodID, cartID, newQuantity);
-                }
-                
-
-            }
-
-            ArrayList<ItemsInCartDTO> listItems
-                    = itemsInCartDAO.loadAllItemsOfCart(cartID);
-            //set img and name for food
-            listItems = itemsInCartDAO.setDetailItemsInCart(listItems);
-
-            HttpSession session = request.getSession();
+            ItemsInCartDAO dao = new ItemsInCartDAO();
+            dao.deleteAItem(itemID);
             
-            session.setAttribute("LIST_ITEMS_IN_CART", listItems);
-            session.setAttribute("CART_ID", cartID);
-
         } catch (NamingException ex) {
-            log("NamingException_ShoppingCartServlet", ex.getCause());
+            log("NamingException_DeleteItemFromCartServlet",ex.getCause());
         } catch (SQLException ex) {
-            log("SQLException_ShoppingCartServlet", ex.getCause());
-            System.out.println(ex);
-        } finally {
-            RequestDispatcher rd = request.getRequestDispatcher(url);
+            log("SQLException_DeleteItemFromCartServlet",ex.getCause());
+        }finally{
+            RequestDispatcher rd = request.getRequestDispatcher(DELETE_SUCCESS);
             rd.forward(request, response);
         }
     }

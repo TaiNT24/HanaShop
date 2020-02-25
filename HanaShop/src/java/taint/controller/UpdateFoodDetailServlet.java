@@ -6,8 +6,10 @@
 package taint.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -15,7 +17,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import taint.model.foodAndDrink.FoodAndDrinkDAO;
 import taint.model.foodAndDrink.FoodAndDrinkDTO;
 
@@ -23,11 +24,8 @@ import taint.model.foodAndDrink.FoodAndDrinkDTO;
  *
  * @author nguye
  */
-@WebServlet(name = "SearchServlet", urlPatterns = {"/SearchServlet"})
-public class SearchServlet extends HttpServlet {
-
-    private final String SEARCH_FAIL = "StartupServlet";
-    private final String SEARCH_SUCCESS = "ResultUserSearch.jsp";
+@WebServlet(name = "UpdateFoodDetailServlet", urlPatterns = {"/UpdateFoodDetailServlet"})
+public class UpdateFoodDetailServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,57 +40,24 @@ public class SearchServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        String searchVal = request.getParameter("searchVal");
-        String searchByFilter = request.getParameter("SearchByFilter");
-        String searchByCategory = request.getParameter("SearchByCategory");
-        String priceVal = request.getParameter("priceVal");
+        String foodIDStr = request.getParameter("foodID");
 
-        String url = SEARCH_FAIL;
         try {
-            HttpSession session = request.getSession();
+            int foodID = Integer.parseInt(foodIDStr);
+            FoodAndDrinkDAO dao = new FoodAndDrinkDAO();
 
-            if (!searchVal.equals("") || searchByFilter != null) {
-                session.setAttribute("searchVal", searchVal);
-
-                FoodAndDrinkDAO dao = new FoodAndDrinkDAO();
-                ArrayList<FoodAndDrinkDTO> listSearch;
-
-                if (searchByFilter != null) {
-                    session.setAttribute("SearchByFilter", searchByFilter);
-                    if (!searchByFilter.equals("Price")) {
-
-                        if (!searchByCategory.equals("Category")) {
-                            session.setAttribute("SearchByCategory", searchByCategory);
-                            listSearch
-                                    = dao.userSearchByCategory(searchVal, searchByCategory, 1);
-
-                        } else { // choose filter, but not choose category => search by name
-                            listSearch = dao.userSearchByName(searchVal, 1);
-                        }
-
-                    } else {
-                        int price = Integer.parseInt(priceVal);
-                        int fromPrice = price - 5;
-                        int toPrice = price + 5;
-                        session.setAttribute("priceVal", priceVal);
-
-                        session.removeAttribute("SearchByCategory");
-                        listSearch = dao.userSearchByPrice(searchVal, fromPrice, toPrice, 1);
-                    }
-                } else { // no filter => search by name
-                    listSearch = dao.userSearchByName(searchVal, 1);
-                }
-                request.setAttribute("LIST_SEARCH", listSearch);
-                url = SEARCH_SUCCESS;
-            }
-
+            FoodAndDrinkDTO dto = dao.searchFood(foodID);
+            
+            request.setAttribute("food", dto);
+            
         } catch (SQLException ex) {
-            log("SQLException_SearchServlet", ex.getCause());
+            log("SQLException_UpdateFoodDetailServlet", ex.getCause());
         } catch (NamingException ex) {
-            log("NamingException_SearchServlet", ex.getCause());
+            log("NamingException_UpdateFoodDetailServlet", ex.getCause());
         } finally {
-            RequestDispatcher rd = request.getRequestDispatcher(url);
+            RequestDispatcher rd = request.getRequestDispatcher("UpdateFoodDetail.jsp");
             rd.forward(request, response);
+            
         }
     }
 

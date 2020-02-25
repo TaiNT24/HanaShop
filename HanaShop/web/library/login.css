@@ -8,7 +8,9 @@ h1{
 .small-form{
     width: 50%;
     border-radius: 5%;
-    float: left;
+    /*float: left;*/
+    margin-left: 25%;
+
 }
 .form-login{
     margin-left: 10%;
@@ -43,26 +45,26 @@ h1{
     background: #eee;
     overflow-x: hidden;
     padding: 8px 0;
-   
+
 }
 .main { 
     margin-left: 22em;  
     padding: 0px 10px;
 }
 a:link {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 a:visited {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 a:hover {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 a:active {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .item-shopping-cart{
@@ -93,4 +95,9 @@ a:active {
     width: 70%;
     margin-left: 15%;
     margin-top:3em;
+}
+
+td{
+    /*padding: 1.5em;*/
+
 }

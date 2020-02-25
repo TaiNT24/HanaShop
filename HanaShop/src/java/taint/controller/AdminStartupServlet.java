@@ -8,14 +8,18 @@ package taint.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import taint.model.category.CategoryDAO;
 import taint.model.foodAndDrink.FoodAndDrinkDAO;
 import taint.model.foodAndDrink.FoodAndDrinkDTO;
 
@@ -23,11 +27,10 @@ import taint.model.foodAndDrink.FoodAndDrinkDTO;
  *
  * @author nguye
  */
-@WebServlet(name = "SearchServlet", urlPatterns = {"/SearchServlet"})
-public class SearchServlet extends HttpServlet {
+@WebServlet(name = "AdminStartupServlet", urlPatterns = {"/AdminStartupServlet"})
+public class AdminStartupServlet extends HttpServlet {
 
-    private final String SEARCH_FAIL = "StartupServlet";
-    private final String SEARCH_SUCCESS = "ResultUserSearch.jsp";
+    private final String ADMIN_HOME = "AdminHome.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,54 +45,50 @@ public class SearchServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        String searchVal = request.getParameter("searchVal");
-        String searchByFilter = request.getParameter("SearchByFilter");
-        String searchByCategory = request.getParameter("SearchByCategory");
-        String priceVal = request.getParameter("priceVal");
-
-        String url = SEARCH_FAIL;
+        String url = ADMIN_HOME;
         try {
-            HttpSession session = request.getSession();
 
-            if (!searchVal.equals("") || searchByFilter != null) {
-                session.setAttribute("searchVal", searchVal);
-
-                FoodAndDrinkDAO dao = new FoodAndDrinkDAO();
-                ArrayList<FoodAndDrinkDTO> listSearch;
-
-                if (searchByFilter != null) {
-                    session.setAttribute("SearchByFilter", searchByFilter);
-                    if (!searchByFilter.equals("Price")) {
-
-                        if (!searchByCategory.equals("Category")) {
-                            session.setAttribute("SearchByCategory", searchByCategory);
-                            listSearch
-                                    = dao.userSearchByCategory(searchVal, searchByCategory, 1);
-
-                        } else { // choose filter, but not choose category => search by name
-                            listSearch = dao.userSearchByName(searchVal, 1);
-                        }
-
-                    } else {
-                        int price = Integer.parseInt(priceVal);
-                        int fromPrice = price - 5;
-                        int toPrice = price + 5;
-                        session.setAttribute("priceVal", priceVal);
-
-                        session.removeAttribute("SearchByCategory");
-                        listSearch = dao.userSearchByPrice(searchVal, fromPrice, toPrice, 1);
-                    }
-                } else { // no filter => search by name
-                    listSearch = dao.userSearchByName(searchVal, 1);
-                }
-                request.setAttribute("LIST_SEARCH", listSearch);
-                url = SEARCH_SUCCESS;
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.removeAttribute("searchVal");
+                session.removeAttribute("SearchByFilter");
+                session.removeAttribute("SearchByCategory");
+                session.removeAttribute("priceVal");
             }
 
+            FoodAndDrinkDAO dao = new FoodAndDrinkDAO();
+//trang 1
+            ArrayList<FoodAndDrinkDTO> listArticle = dao.loadAllProduct(1);
+
+            request.setAttribute("LIST_PRODUCT", listArticle);
+
+            //ServletContext obj
+            ServletContext sc = request.getServletContext();
+            Object listStatusObject = sc.getAttribute("LIST_STATUS");
+            Object listCategory = sc.getAttribute("LIST_CATEGORY");
+
+            if (listStatusObject == null) {
+                ArrayList<String> listStatus = new ArrayList<>();
+
+                listStatus.add("Active");
+                listStatus.add("Inactive");
+
+                sc.setAttribute("LIST_STATUS", listStatus);
+            }
+            if (listCategory == null) {
+                CategoryDAO cateDAO = new CategoryDAO();
+
+                ArrayList<String> listCate = cateDAO.loadCategory();
+                sc.setAttribute("LIST_CATEGORY", listCate);
+            }
+
+//set page
+//            ArrayList<Integer> pageList = dao.getSizeOfActiveArticle();
+//            sc.setAttribute("PAGES_COUNT", pageList);
         } catch (SQLException ex) {
-            log("SQLException_SearchServlet", ex.getCause());
+            Logger.getLogger(AdminStartupServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NamingException ex) {
-            log("NamingException_SearchServlet", ex.getCause());
+            Logger.getLogger(AdminStartupServlet.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);

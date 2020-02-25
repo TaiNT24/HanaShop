@@ -89,6 +89,74 @@ public class FoodAndDrinkDAO {
         return listAvalableProduct;
     }
 
+    public ArrayList<FoodAndDrinkDTO> loadAllProduct(int page)
+            throws SQLException, NamingException {
+        Connection con = null;
+        PreparedStatement preStm = null;
+        ResultSet rs = null;
+
+        ArrayList<FoodAndDrinkDTO> listAllProduct = new ArrayList<>();
+
+        String sqlQuery = "SELECT FoodID, FoodName, Img, Description, Price,"
+                + "Quantity, Category, Status "
+                + "FROM FoodAndDrink "
+                + "ORDER BY CreateDate DESC "
+                + "OFFSET ? ROWS "
+                + "FETCH NEXT ? ROWS ONLY";
+        try {
+            con = DBUtils.connectDB();
+
+            if (con != null) {
+                preStm = con.prepareStatement(sqlQuery);
+
+                int dismissRecord = (page - 1) * RECORDS_IN_PAGE;
+
+                preStm.setInt(1, dismissRecord);
+                preStm.setInt(2, RECORDS_IN_PAGE);
+
+                rs = preStm.executeQuery();
+
+                int id;
+                String foodName;
+                String img;
+                String description;
+                float price;
+                int quantity;
+                String category;
+                String status;
+
+                while (rs.next()) {
+                    id = rs.getInt("FoodID");
+                    foodName = rs.getString("FoodName");
+                    img = rs.getString("Img");
+                    description = rs.getString("Description");
+                    price = rs.getFloat("Price");
+                    quantity = rs.getInt("Quantity");
+                    category = rs.getString("Category");
+                    status = rs.getString("Status");
+
+                    FoodAndDrinkDTO dto = new FoodAndDrinkDTO(id, foodName, img,
+                            description, price, quantity, category);
+                    dto.setStatus(status);
+
+                    listAllProduct.add(dto);
+                }
+            }
+
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return listAllProduct;
+    }
+
     public ArrayList<FoodAndDrinkDTO>
             userSearchByCategory(String searchVal, String category, int page)
             throws SQLException, NamingException {
@@ -304,27 +372,27 @@ public class FoodAndDrinkDAO {
         return listSearch;
     }
 
-    public float getPriceFood(int FoodID) throws NamingException, SQLException{
+    public float getPriceFood(int FoodID) throws NamingException, SQLException {
         Connection con = null;
         PreparedStatement preStm = null;
         ResultSet rs = null;
-        
+
         String sqlQuery = "select Price from FoodAndDrink "
                 + "where FoodID=?";
-        try{
+        try {
             con = DBUtils.connectDB();
-            
-            if(con!= null){
+
+            if (con != null) {
                 preStm = con.prepareStatement(sqlQuery);
-                
+
                 preStm.setInt(1, FoodID);
-                
+
                 rs = preStm.executeQuery();
-                if(rs.next()){
+                if (rs.next()) {
                     return rs.getFloat("Price");
                 }
             }
-        }finally{
+        } finally {
             if (rs != null) {
                 rs.close();
             }
@@ -337,28 +405,28 @@ public class FoodAndDrinkDAO {
         }
         return 0;
     }
-    
-    public String getImgFood(int FoodID) throws NamingException, SQLException{
+
+    public String getImgFood(int FoodID) throws NamingException, SQLException {
         Connection con = null;
         PreparedStatement preStm = null;
         ResultSet rs = null;
-        
+
         String sqlQuery = "select Img from FoodAndDrink "
                 + "where FoodID=?";
-        try{
+        try {
             con = DBUtils.connectDB();
-            
-            if(con!= null){
+
+            if (con != null) {
                 preStm = con.prepareStatement(sqlQuery);
-                
+
                 preStm.setInt(1, FoodID);
-                
+
                 rs = preStm.executeQuery();
-                if(rs.next()){
+                if (rs.next()) {
                     return rs.getString("Img");
                 }
             }
-        }finally{
+        } finally {
             if (rs != null) {
                 rs.close();
             }
@@ -371,28 +439,28 @@ public class FoodAndDrinkDAO {
         }
         return null;
     }
-    
-    public String getNameFood(int FoodID) throws NamingException, SQLException{
+
+    public String getNameFood(int FoodID) throws NamingException, SQLException {
         Connection con = null;
         PreparedStatement preStm = null;
         ResultSet rs = null;
-        
+
         String sqlQuery = "select FoodName from FoodAndDrink "
                 + "where FoodID=?";
-        try{
+        try {
             con = DBUtils.connectDB();
-            
-            if(con!= null){
+
+            if (con != null) {
                 preStm = con.prepareStatement(sqlQuery);
-                
+
                 preStm.setInt(1, FoodID);
-                
+
                 rs = preStm.executeQuery();
-                if(rs.next()){
+                if (rs.next()) {
                     return rs.getString("FoodName");
                 }
             }
-        }finally{
+        } finally {
             if (rs != null) {
                 rs.close();
             }
@@ -405,5 +473,101 @@ public class FoodAndDrinkDAO {
         }
         return null;
     }
-    
+
+    public boolean quickUpdate(int foodID, String status, String category)
+            throws NamingException, SQLException {
+        Connection con = null;
+        PreparedStatement preStm = null;
+
+        String sqlQuery = "Update FoodAndDrink "
+                + "set Category=?, Status=? "
+                + "where FoodID=?";
+        try {
+            con = DBUtils.connectDB();
+
+            if (con != null) {
+                preStm = con.prepareStatement(sqlQuery);
+
+                preStm.setInt(3, foodID);
+                preStm.setString(2, status);
+                preStm.setString(1, category);
+
+                int row = preStm.executeUpdate();
+                if (row > 0) {
+                    return true;
+                }
+            }
+        } finally {
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return false;
+    }
+
+    public FoodAndDrinkDTO searchFood(int foodID)
+            throws SQLException, NamingException {
+        Connection con = null;
+        PreparedStatement preStm = null;
+        ResultSet rs = null;
+
+        FoodAndDrinkDTO dto = new FoodAndDrinkDTO();
+
+        String sqlQuery = "SELECT FoodID, FoodName, Img, Description, Price,"
+                + "Quantity, Category, Status "
+                + "FROM FoodAndDrink "
+                + "WHERE FoodID = ?";
+
+        try {
+            con = DBUtils.connectDB();
+            if (con != null) {
+                preStm = con.prepareStatement(sqlQuery);
+
+                preStm.setInt(1, foodID);
+
+                rs = preStm.executeQuery();
+
+                int id;
+                String foodName;
+                String img;
+                String description;
+                float price;
+                int quantity;
+                String category;
+                String status;
+
+                if (rs.next()) {
+                    id = rs.getInt("FoodID");
+                    foodName = rs.getString("FoodName");
+                    img = rs.getString("Img");
+                    description = rs.getString("Description");
+                    price = rs.getFloat("Price");
+                    quantity = rs.getInt("Quantity");
+                    category = rs.getString("Category");
+                    status = rs.getString("Status");
+
+                    dto = new FoodAndDrinkDTO(id, foodName, img,
+                            description, price, quantity, category);
+                    dto.setStatus(status);
+
+                }
+            }
+
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return dto;
+    }
+
 }

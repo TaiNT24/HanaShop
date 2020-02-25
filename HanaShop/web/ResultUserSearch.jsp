@@ -32,7 +32,13 @@
                         <div class="card ">
                             <img class="card-img-top " src="${product.img}" alt="Hamburger image" style="width:100%">
                             <div class="card-body">
-                                <h4 class="card-title">${product.foodName}</h4>
+                                <h4 class="card-title">
+                                    ${product.foodName}
+                                    <span style="float: right"
+                                        class="badge badge-success"
+                                          >Available
+                                    </span>
+                                </h4>
                                 <p class="card-text">${product.description}</p>
 
                                 <h3 class="text-primary" style="float: left">Price: ${product.price}</h3>
@@ -55,11 +61,8 @@
                                         Add to cart
                                     </button>
                                 </form>
-
-
                                 <br>
                                 <br>
-                                <span class="badge badge-success">Available</span>
                             </div>
                         </div>
                     </c:forEach>

@@ -51,8 +51,8 @@ and open the template in the editor.
                     </li>
                 </c:if>
 
-                <!--USer-->
-                <c:if test="${not empty sessionScope.USER_ID}">
+                <!--User-->
+                <c:if test="${sessionScope.ROLE == 0}">
                     <li class="nav-item text-white " 
                         style="text-align: center; width: 15em;"
                         >
@@ -63,10 +63,13 @@ and open the template in the editor.
                             </button>
 
                             <div class="dropdown-menu" >
+                                <c:url var="history" value="HistoryShopping">
+                                    <c:param name="userID" value="${sessionScope.USER_ID}"/>
+                                </c:url>
                                 <p class="dropdown-item" data-toggle="collapse" 
                                    style="padding: 0.5em;text-align: center"
                                    >
-                                    <a href="#History">History shopping</a>
+                                    <a href="${history}">History shopping</a>
                                 </p>
                                 <p class="dropdown-item" data-toggle="collapse" 
                                    style="padding: 0.5em;text-align: center"
@@ -84,6 +87,19 @@ and open the template in the editor.
                         <a href="${yourCart}" class="btn btn-info">
                             Shopping Cart
                         </a>
+                    </li>
+
+                </c:if>
+
+                <!--Admin-->
+                <c:if test="${sessionScope.ROLE == 1}">
+                    <li class="nav-item" style="margin-left: 1em;width: 15em">
+                        <button type="button" class="btn btn-primary">
+                            Welcome: ${sessionScope.USERNAME}
+                        </button>
+                    </li>
+                    <li class="nav-item" style="margin-left: 1em">
+                        <a href="Logout" class="btn btn-info">Logout</a>
                     </li>
                 </c:if>
             </ul>

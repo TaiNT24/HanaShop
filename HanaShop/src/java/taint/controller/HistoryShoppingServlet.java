@@ -6,10 +6,13 @@
 package taint.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import taint.model.cart.CartDAO;
+import taint.model.cart.CartDTO;
 import taint.model.itemsInCart.ItemsInCartDAO;
 import taint.model.itemsInCart.ItemsInCartDTO;
 
@@ -24,11 +28,10 @@ import taint.model.itemsInCart.ItemsInCartDTO;
  *
  * @author nguye
  */
-@WebServlet(name = "ShoppingCartServlet", urlPatterns = {"/ShoppingCartServlet"})
-public class ShoppingCartServlet extends HttpServlet {
+@WebServlet(name = "HistoryShoppingServlet", urlPatterns = {"/HistoryShoppingServlet"})
+public class HistoryShoppingServlet extends HttpServlet {
 
-    private final String CHECKOUT_PAGE = "CheckoutCart.jsp";
-
+    private final String REDIRECT_HISTORY_PAGE = "HistoryPage";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -41,69 +44,42 @@ public class ShoppingCartServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
-        String userID = request.getParameter("userID");
-        String foodIDStr = request.getParameter("foodID");
-        String quantityItem = request.getParameter("quantityItem");
         
-
-        String url = CHECKOUT_PAGE;
+        String userID = request.getParameter("userID");
+        
         try {
-
             CartDAO cartDAO = new CartDAO();
-            int cartID = cartDAO.getCurrentCartIDOfUser(userID);
-            boolean isNewCart = false;
-            if (cartID == -1) {
-                isNewCart = cartDAO.createNewCartForUser(userID);
-            }
-            if (isNewCart) {
-                cartID = cartDAO.getCurrentCartIDOfUser(userID);
-            }
+            ArrayList<CartDTO> listCartHistory = cartDAO.getHistoryShopping(userID);
             
-            ItemsInCartDAO itemsInCartDAO = new ItemsInCartDAO();
-            if (foodIDStr != null) {
-                int foodID = Integer.parseInt(foodIDStr);
-
-                String btnAction = request.getParameter("btnAction");
-
-                int quantity = itemsInCartDAO.checkExistedItem(foodID, cartID);
-                int newQuantity = Integer.parseInt(quantityItem);
-                
-                if(newQuantity==quantity){
-                    if (btnAction.equals("decreItem")) {
-                        if (quantity != -1) {
-                            itemsInCartDAO.updateQuantity(foodID, cartID, quantity, true);
-                        }
-                    } else {
-                        if (quantity != -1) {
-                            itemsInCartDAO.updateQuantity(foodID, cartID, quantity);
-                        }
-                    }
-                }else{
-                    itemsInCartDAO.updateNewQuantity(foodID, cartID, newQuantity);
-                }
-                
-
-            }
-
-            ArrayList<ItemsInCartDTO> listItems
-                    = itemsInCartDAO.loadAllItemsOfCart(cartID);
-            //set img and name for food
-            listItems = itemsInCartDAO.setDetailItemsInCart(listItems);
-
+            ItemsInCartDAO itemICDAO = new ItemsInCartDAO();
+            ArrayList<ItemsInCartDTO> listItems;
+            
+            Hashtable<Integer, ArrayList<ItemsInCartDTO>> listItemInCart 
+                    = new Hashtable<Integer, ArrayList<ItemsInCartDTO>>();
+            
             HttpSession session = request.getSession();
+            session.setAttribute("LIST_HISTORY_CART", listCartHistory);
             
-            session.setAttribute("LIST_ITEMS_IN_CART", listItems);
-            session.setAttribute("CART_ID", cartID);
-
+            for (int i = 0; i < listCartHistory.size(); i++) {
+                listItems = 
+                        itemICDAO.loadAllItemsOfCart(listCartHistory.get(i).getCartID());
+                
+                listItems = itemICDAO.setDetailItemsInCart(listItems);
+                
+                listItemInCart.put(listCartHistory.get(i).getCartID(), listItems);
+                
+            }
+            
+            session.setAttribute("LIST_ITEM_IN_CART", listItemInCart);
+            
+            
         } catch (NamingException ex) {
-            log("NamingException_ShoppingCartServlet", ex.getCause());
+            log("NamingException_HistoryShopping",ex.getCause());
         } catch (SQLException ex) {
-            log("SQLException_ShoppingCartServlet", ex.getCause());
+            log("SQLException_HistoryShopping",ex.getCause());
             System.out.println(ex);
-        } finally {
-            RequestDispatcher rd = request.getRequestDispatcher(url);
-            rd.forward(request, response);
+        }finally{
+            response.sendRedirect(REDIRECT_HISTORY_PAGE);
         }
     }
 

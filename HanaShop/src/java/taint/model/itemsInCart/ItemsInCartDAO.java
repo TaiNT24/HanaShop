@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.naming.NamingException;
+import taint.model.cart.CartDAO;
 import taint.model.foodAndDrink.FoodAndDrinkDAO;
 import taint.utils.DBUtils;
 
@@ -271,5 +272,132 @@ public class ItemsInCartDAO implements Serializable {
         }
         return false;
     }
+    
+    public boolean deleteAItem(int itemID)
+            throws NamingException, SQLException {
+        Connection con = null;
+        PreparedStatement preStm = null;
 
+        String sqlQuery = "delete from ItemsInCart where ItemID = ?";
+        try {
+            con = DBUtils.connectDB();
+            if (con != null) {
+                preStm = con.prepareStatement(sqlQuery);
+
+                preStm.setInt(1, itemID);
+
+                int row = preStm.executeUpdate();
+                if (row > 0) {
+                    return true;
+                }
+            }
+        } finally {
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return false;
+    }
+
+    public ArrayList<Integer> searchItemsOfCart(String searchVal)
+            throws NamingException, SQLException {
+        Connection con = null;
+        PreparedStatement preStm = null;
+        ResultSet rs = null;
+
+        ArrayList<Integer> listCartID = new ArrayList<>();
+
+        String sqlQuery = "select CartID "
+                + "from ItemsInCart "
+                + "where FoodID IN (SELECT FoodID "
+                                + "FROM FoodAndDrink "
+                                + "WHERE FoodName LIKE ? ) ";
+        try {
+            con = DBUtils.connectDB();
+            if (con != null) {
+                preStm = con.prepareStatement(sqlQuery);
+
+                preStm.setString(1, "%"+searchVal+"%");
+
+                rs = preStm.executeQuery();
+
+                int cartID;
+                
+                while (rs.next()) {
+                    cartID = rs.getInt("CartID");
+
+                    listCartID.add(cartID);
+                }
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return listCartID;
+    }
+    
+    public ArrayList<Integer> searchItemsOfCartWithDate(String searchVal, 
+            String fromDate, String toDate)
+            
+            throws NamingException, SQLException {
+        Connection con = null;
+        PreparedStatement preStm = null;
+        ResultSet rs = null;
+
+        ArrayList<Integer> listCartID = new ArrayList<>();
+
+        String sqlQuery = "select CartID "
+                + "from ItemsInCart "
+                + "where FoodID IN (SELECT FoodID "
+                                + "FROM FoodAndDrink "
+                                + "WHERE FoodName LIKE ?) ";
+        try {
+            con = DBUtils.connectDB();
+            if (con != null) {
+                preStm = con.prepareStatement(sqlQuery);
+
+                preStm.setString(1, "%"+searchVal+"%");
+
+                rs = preStm.executeQuery();
+
+                int cartID;
+                
+                CartDAO dao = new CartDAO();
+                
+                while (rs.next()) {
+                    cartID = rs.getInt("CartID");
+
+                    boolean isInRangeDate = 
+                            dao.getHistoryCartIDWithDate(cartID, fromDate, toDate);
+                    
+                    if(isInRangeDate){
+                        listCartID.add(cartID);
+                    }
+                }
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (preStm != null) {
+                preStm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return listCartID;
+    }
+    
+    
 }
