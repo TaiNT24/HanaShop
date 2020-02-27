@@ -19,14 +19,11 @@ h1{
     width: 80%;
 }
 .card{
-    position: static;
-    z-index: 1;
     width: 22em;
     float: left;
     margin-left: 1em;
     margin-top: 3em;
 }
-
 .home{
     border-left: 1px solid red;
     height: 500px;
@@ -39,6 +36,7 @@ h1{
 .sidenav {
     width: 22em;
     float: left;
+    position: sticky;
     z-index: 1;
     top: 80px;
     left: 10px;
@@ -50,6 +48,11 @@ h1{
 .main { 
     margin-left: 22em;  
     padding: 0px 10px;
+}
+.main::after {
+    content: "";
+    clear: both;
+    display: table;
 }
 a:link {
     text-decoration: none;
@@ -95,9 +98,4 @@ a:active {
     width: 70%;
     margin-left: 15%;
     margin-top:3em;
-}
-
-td{
-    /*padding: 1.5em;*/
-
 }

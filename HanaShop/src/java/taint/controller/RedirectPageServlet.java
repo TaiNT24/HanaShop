@@ -6,25 +6,30 @@
 package taint.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 import javax.naming.NamingException;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import taint.model.foodAndDrink.FoodAndDrinkDAO;
+import taint.model.foodAndDrink.FoodAndDrinkDTO;
 
 /**
  *
  * @author nguye
  */
-@WebServlet(name = "QuickUpdateServlet", urlPatterns = {"/QuickUpdateServlet"})
-public class QuickUpdateServlet extends HttpServlet {
-    private final String UPDATE_SUCCESS = "AdminStartupServlet";
+@WebServlet(name = "RedirectPageServlet", urlPatterns = {"/RedirectPageServlet"})
+public class RedirectPageServlet extends HttpServlet {
+
+    private final String HOME_PAGE = "StartupServlet";
+    private final String RESULT_SEARCH_PAGE = "SearchServlet";
+    private final String ADMIN_HOME_PAGE = "AdminStartupServlet";
+    private final String ADMIN_SEARCH_PAGE = "AdminSearchServlet";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -37,28 +42,24 @@ public class QuickUpdateServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        String status = request.getParameter("status");
-        String category = request.getParameter("category");
-        String foodIDStr = request.getParameter("foodID");
-        
+
+        String pageView = request.getParameter("pageView");
+
         String url = "";
-        try{
-            int foodID = Integer.parseInt(foodIDStr);
-            
-            FoodAndDrinkDAO dao = new FoodAndDrinkDAO();
-            
-            boolean isUpdate = dao.quickUpdate(foodID, status, category);
-            
-            if(isUpdate){
-                url= UPDATE_SUCCESS;
+        try {
+            if (pageView.equals("Home")) {
+                url = HOME_PAGE;
+            } else if (pageView.equals("Search")) {
+                url = RESULT_SEARCH_PAGE;
+            } else if (pageView.equals("AdminHome")) {
+                url = ADMIN_HOME_PAGE;
+            } else if (pageView.equals("AdminSearch")) {
+                url = ADMIN_SEARCH_PAGE;
             }
-        } catch (NamingException ex) {
-            log("NamingException_QuickUpdateServlet",ex.getCause());
-        } catch (SQLException ex) {
-            log("SQLException_QuickUpdateServlet",ex.getCause());
-        }finally{
-            response.sendRedirect(url);
+
+        } finally {
+            RequestDispatcher rd = request.getRequestDispatcher(url);
+            rd.forward(request, response);
         }
     }
 

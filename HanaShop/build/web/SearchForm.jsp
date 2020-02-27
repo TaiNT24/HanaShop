@@ -16,9 +16,15 @@
     <body>
         <jsp:include page="NavBar.jsp"/>
 
+        <c:set var="searchAction" value="searchAction" />
+        <c:if test="${sessionScope.ROLE == 1}">
+            <c:set var="searchAction" value="adminSearchAction" />
+        </c:if>
+        
+        
         <div class="sidenav">
             <div style=" margin: 2em;">
-                <form action="searchAction" method="POST">
+                <form action="${searchAction}" method="POST">
                     <input class="form-control mr-sm-2" type="text" 
                            name="searchVal" value="${sessionScope.searchVal}"
                            placeholder="Product's name">

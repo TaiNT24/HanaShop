@@ -16,6 +16,7 @@
 
 
         <c:set var="listItemsInCart" value="${sessionScope.LIST_ITEMS_IN_CART}"/>
+        <c:set var="itemOutOfStock" value="${requestScope.ITEM_OUT_OF_STOCK}"/>
 
         <div class="container">
             <jsp:include page="NavBar.jsp" />
@@ -29,6 +30,18 @@
 
                         <c:forEach var="item" items="${listItemsInCart}">
                             <div class="item-shopping-cart">
+
+                                <c:if test="${not empty itemOutOfStock}">
+                                    <c:forEach var="id" items="${itemOutOfStock}">
+                                        <!--id is a hash Table with key is FoodID, value is quantity in stock-->
+                                        <c:if test="${id.key == item.foodID}">
+                                            <p style="color: red">
+                                                This item have ${id.value} in stock. 
+                                                Please delete it or choose again !
+                                            </p>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:if>
 
                                 <form action="ShoppingCart" method="POST">
                                     <div class="row">
@@ -67,7 +80,7 @@
 
                                                 <h5 class="text-danger">Total: ${item.totalPrice}$</h5>
                                                 <c:set var="showConfirm" value="Confirm${item.itemID}"/>
-                                                
+
                                                 <a href="#${showConfirm}" 
                                                    data-toggle="collapse"
                                                    >
@@ -128,7 +141,10 @@
                                     Payment by CASH
                                 </a>
                                 <br>
-                                <a href="" class="btn btn-success btn-lg btn-block">Payment by PayPal</a>
+                                <a href="" class="btn btn-success btn-lg btn-block">
+                                    Payment by PayPal
+
+                                </a>
                             </div>
                         </div>
                     </div>

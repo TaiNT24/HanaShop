@@ -35,7 +35,7 @@
                                 <h4 class="card-title">
                                     ${product.foodName}
                                     <span style="float: right"
-                                        class="badge badge-success"
+                                          class="badge badge-success"
                                           >Available
                                     </span>
                                 </h4>
@@ -46,7 +46,7 @@
                                 <form action="AddToCart">
                                     <input type="hidden" name="foodID" 
                                            value="${product.id}" />
-                                    
+
                                     <input type="hidden" name="searchVal" 
                                            value="${param.searchVal}" />
                                     <input type="hidden" name="SearchByFilter" 
@@ -55,7 +55,7 @@
                                            value="${param.SearchByCategory}" />
                                     <input type="hidden" name="priceVal" 
                                            value="${param.priceVal}" />
-                                    
+
                                     <button class="btn btn-primary"
                                             type="submit" style="float: right">
                                         Add to cart
@@ -69,9 +69,13 @@
 
                 </c:if>
             </div>
-
-
+            
             <!--Paging-->
+            <div>
+                <jsp:include page="PagesDivision.jsp">
+                    <jsp:param name="PagesListForUserSearch" value="true"/>
+                </jsp:include>
+            </div>
 
         </div>
     </body>

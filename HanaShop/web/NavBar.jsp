@@ -26,18 +26,25 @@ and open the template in the editor.
             <h1 class="display-2">Drink and Fast Food Center</h1>
         </div>
 
+        <c:set var="Home" value="StartupServlet" />
+        <c:if test="${sessionScope.ROLE==1}">
+            <c:set var="Home" value="AdminStartupServlet" />
+            <c:set var="display" value="block"/> 
+        </c:if>
         <nav class="navbar navbar-expand-sm bg-dark navbar-dark sticky-top">
             <ul class="navbar-nav">
                 <li class="nav-item ">
-                    <a class="navbar-brand" href="StartupServlet">Home</a>
+                    <a class="navbar-brand" href="${Home}">Home</a>
                 </li>
+                <c:if test="${sessionScope.ROLE==1}">
+                    <li class="nav-item" style="width: 9em;">
+                        <a class="nav-link text-white" href="createNewFood">
+                            Create new food
+                        </a>
+                    </li>
+                </c:if>
 
-                <li class="nav-item ">
-                    <a class="nav-link text-white" href="#">Food</a>
-                </li>
-                <li class="nav-item ">
-                    <a class="nav-link text-white" href="#">Drink</a>
-                </li>
+
             </ul>
 
             <!--.-->

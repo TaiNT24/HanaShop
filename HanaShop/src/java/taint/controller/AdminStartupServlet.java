@@ -8,8 +8,6 @@ package taint.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -45,10 +43,16 @@ public class AdminStartupServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
+        String pageStr = request.getParameter("page");
+        int page = 1;
+        if(pageStr!=null){
+            page = Integer.parseInt(pageStr);
+        }
+        
         String url = ADMIN_HOME;
         try {
 
-            HttpSession session = request.getSession(false);
+            HttpSession session = request.getSession();
             if (session != null) {
                 session.removeAttribute("searchVal");
                 session.removeAttribute("SearchByFilter");
@@ -58,7 +62,7 @@ public class AdminStartupServlet extends HttpServlet {
 
             FoodAndDrinkDAO dao = new FoodAndDrinkDAO();
 //trang 1
-            ArrayList<FoodAndDrinkDTO> listArticle = dao.loadAllProduct(1);
+            ArrayList<FoodAndDrinkDTO> listArticle = dao.loadAllProduct(page);
 
             request.setAttribute("LIST_PRODUCT", listArticle);
 
@@ -83,12 +87,13 @@ public class AdminStartupServlet extends HttpServlet {
             }
 
 //set page
-//            ArrayList<Integer> pageList = dao.getSizeOfActiveArticle();
-//            sc.setAttribute("PAGES_COUNT", pageList);
+            ArrayList<Integer> pageList = dao.getPageListForAdmin();
+            session.setAttribute("PAGES_LIST_ADMIN", pageList);
+            
         } catch (SQLException ex) {
-            Logger.getLogger(AdminStartupServlet.class.getName()).log(Level.SEVERE, null, ex);
+            log("SQLException_AdminStartupServlet", ex.getCause());
         } catch (NamingException ex) {
-            Logger.getLogger(AdminStartupServlet.class.getName()).log(Level.SEVERE, null, ex);
+            log("NamingException_AdminStartupServlet", ex.getCause());
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);

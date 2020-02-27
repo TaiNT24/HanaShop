@@ -35,7 +35,8 @@
                     <input type="hidden" name="userID" value="${sessionScope.USER_ID}" />
 
                     <br><br>
-                    
+                    <span class="btn btn-info">Search by date</span>
+                    <br>
                     <jsp:include page="DateInput.html" />
 
                 </form>

@@ -111,13 +111,18 @@ public class FilterController implements Filter {
 
         try {
             ServletContext sc = req.getServletContext();
+            
+            sc.setAttribute("FILE_NAME_MAPPING", FILE_NAME);
+            
             HashMap<String, String> hashMap
-                    = (HashMap<String, String>) sc.getAttribute("HASH_MAP_OBJECT");
+                    = (HashMap<String, String>) sc.getAttribute("HASH_MAP");
 
 //Mapping txt to hashmap if sc don't have yet
             if (hashMap == null) {
+                
                 String realPath = req.getServletContext().getRealPath("/");
                 File fileName = new File(realPath + FILE_NAME);
+                System.out.println(fileName);
                 MappingText mappingText = new MappingText();
                 hashMap = mappingText.mapping(fileName);
 
@@ -135,10 +140,12 @@ public class FilterController implements Filter {
                     //redirect error page
                 }
             }
+            if(resource.equals("CreateFoodServlet") 
+                    || resource.equals("UpdateFoodServlet")){
+                url = resource;
+            }
 
             if (url != null) {
-                System.out.println(url);
-                
                 RequestDispatcher rd = req.getRequestDispatcher(url);
                 rd.forward(request, response);
                 

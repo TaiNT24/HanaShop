@@ -47,9 +47,21 @@ public class SearchServlet extends HttpServlet {
         String searchByCategory = request.getParameter("SearchByCategory");
         String priceVal = request.getParameter("priceVal");
 
+        HttpSession session = request.getSession();
+
+        String pageStr = request.getParameter("page");
+        int page = 1;
+        if (pageStr != null) {
+            page = Integer.parseInt(pageStr);
+
+            searchVal = (String) session.getAttribute("searchVal");
+            searchByFilter = (String) session.getAttribute("SearchByFilter");
+            searchByCategory = (String) session.getAttribute("SearchByCategory");
+            priceVal = (String) session.getAttribute("priceVal");
+        }
+
         String url = SEARCH_FAIL;
         try {
-            HttpSession session = request.getSession();
 
             if (!searchVal.equals("") || searchByFilter != null) {
                 session.setAttribute("searchVal", searchVal);
@@ -64,10 +76,10 @@ public class SearchServlet extends HttpServlet {
                         if (!searchByCategory.equals("Category")) {
                             session.setAttribute("SearchByCategory", searchByCategory);
                             listSearch
-                                    = dao.userSearchByCategory(searchVal, searchByCategory, 1);
+                                    = dao.userSearchByCategory(searchVal, searchByCategory, page);
 
                         } else { // choose filter, but not choose category => search by name
-                            listSearch = dao.userSearchByName(searchVal, 1);
+                            listSearch = dao.userSearchByName(searchVal, page);
                         }
 
                     } else {
@@ -77,12 +89,22 @@ public class SearchServlet extends HttpServlet {
                         session.setAttribute("priceVal", priceVal);
 
                         session.removeAttribute("SearchByCategory");
-                        listSearch = dao.userSearchByPrice(searchVal, fromPrice, toPrice, 1);
+                        listSearch = 
+                                dao.userSearchByPrice(searchVal
+                                        , fromPrice, toPrice, page);
+                        
                     }
                 } else { // no filter => search by name
-                    listSearch = dao.userSearchByName(searchVal, 1);
+                    listSearch = dao.userSearchByName(searchVal, page);
                 }
                 request.setAttribute("LIST_SEARCH", listSearch);
+                
+                // set page 
+                ArrayList<Integer> pageList
+                        = dao.getPageListForUserSearch(searchVal
+                                , searchByCategory, searchByFilter, priceVal);
+                
+                session.setAttribute("PAGES_LIST_SEARCH", pageList);
                 url = SEARCH_SUCCESS;
             }
 

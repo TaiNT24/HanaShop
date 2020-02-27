@@ -7,25 +7,18 @@ package taint.controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.naming.NamingException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import taint.model.foodAndDrink.FoodAndDrinkDAO;
-import taint.model.foodAndDrink.FoodAndDrinkDTO;
 
 /**
  *
  * @author nguye
  */
-@WebServlet(name = "UpdateFoodDetailServlet", urlPatterns = {"/UpdateFoodDetailServlet"})
-public class UpdateFoodDetailServlet extends HttpServlet {
+@WebServlet(name = "ProcessImgServlet", urlPatterns = {"/ProcessImgServlet"})
+public class ProcessImgServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,24 +32,10 @@ public class UpdateFoodDetailServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-
-        String foodIDStr = request.getParameter("foodID");
-
-        try {
-            int foodID = Integer.parseInt(foodIDStr);
-            FoodAndDrinkDAO dao = new FoodAndDrinkDAO();
-
-            FoodAndDrinkDTO dto = dao.searchFood(foodID);
+        
+        try  {
             
-            request.setAttribute("food", dto);
-            
-        } catch (SQLException ex) {
-            log("SQLException_UpdateFoodDetailServlet", ex.getCause());
-        } catch (NamingException ex) {
-            log("NamingException_UpdateFoodDetailServlet", ex.getCause());
-        } finally {
-            RequestDispatcher rd = request.getRequestDispatcher("UpdateFoodDetail.jsp");
-            rd.forward(request, response);
+        }finally{
             
         }
     }

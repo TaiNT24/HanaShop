@@ -17,6 +17,9 @@
         <c:set var="categories" value="${applicationScope.LIST_CATEGORY}" />
         <c:set var="statuses" value="${applicationScope.LIST_STATUS}" />
 
+        <c:if test="${not empty requestScope.LIST_SEARCH}">
+            <c:set var="products" value="${requestScope.LIST_SEARCH}"/>
+        </c:if>
         <div class="container">
 
             <!--search form-->
@@ -24,6 +27,10 @@
 
             <!--//Display-->
             <div class="main">
+                <c:if test="${empty products}" >
+                    <h2>There is no product</h2>
+                </c:if>
+
                 <c:if test="${not empty products}">
                     <c:forEach var="product" items="${products}" >
                         <div class="card ">
@@ -47,7 +54,9 @@
 
                                 <br>
                                 <br>
-                                <form action="quickUpdate">
+                                <form action="UpdateFoodServlet" method="POST"
+                                      enctype="multipart/form-data" 
+                                      >
                                     <input type="hidden" name="foodID" 
                                            value="${product.id}"/>
                                     <label for="cate">Category:</label>
@@ -70,7 +79,7 @@
                                         </button>
                                     </div>
                                     <br>
-                                    
+
                                     <!--status-->
                                     <c:set var="textMsg" value="text${product.id}"/>
                                     <c:set var="statusID" value="status${product.id}"/>
@@ -93,7 +102,7 @@
                                             </c:forEach>
                                         </select>
 
-                                        
+
                                         <a href="#${showConfirm}" class="btn btn-primary"
                                            data-toggle="collapse"
                                            onclick="ChangeStatus('${statusID}', '${textMsg}')"
@@ -123,12 +132,12 @@
 
                                 <br>
                                 <div class="form-group text-white">
-                                    <c:url var="gotoDetail"  value="UpdateFoodDetail">
+                                    <c:url var="gotoDetail"  value="GotoUpdateFoodDetail">
                                         <c:param name="foodID" value="${product.id}"/>
                                     </c:url>
                                     <a href="${gotoDetail}"
-                                        class="btn btn-primary form-control"
-                                        >
+                                       class="btn btn-primary form-control"
+                                       >
                                         Update details
                                     </a>
                                 </div>
@@ -138,8 +147,17 @@
                 </c:if>
             </div>
 
-
             <!--Paging-->
+            <div>
+                <c:set var="adminPage" value="PagesListForAdmin" />
+                <c:if test="${not empty requestScope.IS_SEARCH}">
+                    <c:set var="adminPage" value="PagesListForAdminSearch" />
+                </c:if>
+                
+                <jsp:include page="PagesDivision.jsp">
+                    <jsp:param name="adminPage" value="${adminPage}"/>
+                </jsp:include>
+            </div>
 
         </div>
 

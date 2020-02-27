@@ -43,8 +43,13 @@ public class StartupServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
+        String pageStr = request.getParameter("page");
+        int page = 1;
+        if(pageStr!=null){
+            page = Integer.parseInt(pageStr);
+        }
+        
         String url = HOME_PAGE;
-
         try {
             HttpSession session = request.getSession(false);
             if (session != null) {
@@ -57,17 +62,19 @@ public class StartupServlet extends HttpServlet {
             FoodAndDrinkDAO dao = new FoodAndDrinkDAO();
             CategoryDAO cateDAO = new CategoryDAO();
 //trang 1
-            ArrayList<FoodAndDrinkDTO> listArticle = dao.loadActiveProduct(1);
+            ArrayList<FoodAndDrinkDTO> listProduct = dao.loadActiveProduct(page);
 
-            request.setAttribute("LIST_PRODUCT", listArticle);
-
-            ArrayList<String> listCate = cateDAO.loadCategory();
-            //set page
+            request.setAttribute("LIST_PRODUCT", listProduct);
+           
+            
+//set Category
             ServletContext sc = request.getServletContext();
+            ArrayList<String> listCate = cateDAO.loadCategory();
             sc.setAttribute("LIST_CATEGORY", listCate);
-
-//            ArrayList<Integer> pageList = dao.getSizeOfActiveArticle();
-//            sc.setAttribute("PAGES_COUNT", pageList);
+            
+//set page
+            ArrayList<Integer> pageList = dao.getPageListForUser();
+            sc.setAttribute("PAGES_LIST", pageList);
         } catch (SQLException ex) {
             log("SQLException_StartupServlet", ex.getCause());
         } catch (NamingException ex) {

@@ -26,8 +26,8 @@ public class FoodAndDrinkDTO implements Serializable {
     public FoodAndDrinkDTO() {
     }
 
-    public FoodAndDrinkDTO(int id, String foodName, String img
-            , String description, float price, int quantity, String category) {
+    public FoodAndDrinkDTO(int id, String foodName, String img,
+            String description, float price, int quantity, String category) {
         this.id = id;
         this.foodName = foodName;
         this.img = img;
@@ -108,6 +108,11 @@ public class FoodAndDrinkDTO implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return foodName + ", " + img + ", " + description + ", " + price 
+                + ", " + quantity + ", " + category + ", " + status;
+    }
+
 }

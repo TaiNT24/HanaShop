@@ -26,26 +26,29 @@
             <div class="main">
                 <c:if test="${not empty products}">
                     <c:forEach var="product" items="${products}" >
+
                         <div class="card ">
-                            <img class="card-img-top " src="${product.img}" alt="Hamburger image" style="width:100%">
+                            <img class="card-img-top " src="${product.img}" 
+                                 alt="${product.foodName} image" style="width:100%">
                             <div class="card-body">
                                 <h4 class="card-title">
                                     ${product.foodName}
                                     <span style="float: right"
-                                        class="badge badge-success"
+                                          class="badge badge-success"
                                           >Available
                                     </span>
                                 </h4>
-                                
+
                                 <p class="card-text">${product.description}</p>
 
-                                
-                                <h3 class="text-primary" style="float: left">Price: ${product.price}</h3>
+                                <h3 class="text-primary" style="float: left">
+                                    Price: ${product.price}
+                                </h3>
 
                                 <c:url var="addToCart" value="AddToCart">
                                     <c:param name="foodID" value="${product.id}"/>
                                 </c:url>
-                                
+
                                 <a class="btn btn-primary" style="float: right" 
                                    href="${addToCart}" >
                                     Add to cart
@@ -55,15 +58,18 @@
                             </div>
                         </div>
                     </c:forEach>
-                    
+
                 </c:if>
+
+
             </div>
-            
-            
             <!--Paging-->
-            
+            <div>
+                <jsp:include page="PagesDivision.jsp">
+                    <jsp:param name="PagesListForUser" value="true"/>
+                </jsp:include>
+            </div>
         </div>
 
-        
     </body>
 </html>

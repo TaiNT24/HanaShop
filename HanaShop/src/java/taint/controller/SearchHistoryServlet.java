@@ -42,7 +42,7 @@ public class SearchHistoryServlet extends HttpServlet {
      *
      * @param request servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
+     * @throws ServletException if getNewName servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -138,7 +138,7 @@ public class SearchHistoryServlet extends HttpServlet {
      *
      * @param request servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
+     * @throws ServletException if getNewName servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     @Override
@@ -152,7 +152,7 @@ public class SearchHistoryServlet extends HttpServlet {
      *
      * @param request servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
+     * @throws ServletException if getNewName servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     @Override
@@ -162,9 +162,9 @@ public class SearchHistoryServlet extends HttpServlet {
     }
 
     /**
-     * Returns a short description of the servlet.
+     * Returns getNewName short description of the servlet.
      *
-     * @return a String containing servlet description
+     * @return getNewName String containing servlet description
      */
     @Override
     public String getServletInfo() {
