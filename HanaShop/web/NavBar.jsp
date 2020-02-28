@@ -17,11 +17,31 @@ and open the template in the editor.
         <title>Nav Bar</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="google-signin-client_id" 
+              content="41311026166-1cfslhs449d062qv7l862ficnju8h1ed.apps.googleusercontent.com">
+        
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="library/login.css">
     </head>
 
     <body >
+        <script>
+            function signOut() {
+                var auth2 = gapi.auth2.getAuthInstance();
+                auth2.signOut().then(function () {
+                    console.log('User signed out.');
+                    window.location.href = 'index.jsp';
+                });
+            }
+
+            function onLoad() {
+                gapi.load('auth2', function () {
+                    gapi.auth2.init();
+                });
+            }
+        </script>
+
         <div class="jumbotron">
             <h1 class="display-2">Drink and Fast Food Center</h1>
         </div>
@@ -81,7 +101,7 @@ and open the template in the editor.
                                 <p class="dropdown-item" data-toggle="collapse" 
                                    style="padding: 0.5em;text-align: center"
                                    >
-                                    <a href="Logout">Logout</a>
+                                    <a href="Logout" onclick="signOut();">Logout</a>
                                 </p>
                             </div>
                         </div>                   
@@ -112,6 +132,8 @@ and open the template in the editor.
             </ul>
         </nav>
         <br>
+
+        <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

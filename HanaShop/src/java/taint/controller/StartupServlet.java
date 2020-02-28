@@ -57,6 +57,8 @@ public class StartupServlet extends HttpServlet {
                 session.removeAttribute("SearchByFilter");
                 session.removeAttribute("SearchByCategory");
                 session.removeAttribute("priceVal");
+                session.removeAttribute("PAGES_LIST_SEARCH");
+                
             }
 
             FoodAndDrinkDAO dao = new FoodAndDrinkDAO();

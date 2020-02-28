@@ -1072,21 +1072,23 @@ public class FoodAndDrinkDAO {
                         preStm.setString(1, searchV);
                         preStm.setInt(2, fromPrice);
                         preStm.setInt(3, toPrice);
-                    
-                    }else if(searchByCategory!=null){
-                        if(!searchByCategory.equals("Category")){
+
+                    } else if (searchByCategory != null) {
+                        if (!searchByCategory.equals("Category")) {
                             sqlQuery += "and Category = ? ";
 
                             preStm = con.prepareStatement(sqlQuery);
 
                             preStm.setString(1, searchV);
                             preStm.setString(2, searchByCategory);
-                            
-                        }else{//chooser filter by Category but not choose category
+
+                        } else {//chooser filter by Category but not choose category
+                            preStm = con.prepareStatement(sqlQuery);
                             preStm.setString(1, searchV);
                         }
                     }
-                }else{//no filter
+                } else {//no filter
+                    preStm = con.prepareStatement(sqlQuery);
                     preStm.setString(1, searchV);
                 }
 
@@ -1151,7 +1153,7 @@ public class FoodAndDrinkDAO {
         }
         return listPage;
     }
-    
+
     public ArrayList<Integer> getPageListForAdminSearch(String searchVal,
             String searchByCategory, String searchByFilter, String priceVal)
             throws NamingException, SQLException {
@@ -1184,21 +1186,23 @@ public class FoodAndDrinkDAO {
                         preStm.setString(1, searchV);
                         preStm.setInt(2, fromPrice);
                         preStm.setInt(3, toPrice);
-                    
-                    }else if(searchByCategory!=null){
-                        if(!searchByCategory.equals("Category")){
+
+                    } else if (searchByCategory != null) {
+                        if (!searchByCategory.equals("Category")) {
                             sqlQuery += "and Category = ? ";
 
                             preStm = con.prepareStatement(sqlQuery);
 
                             preStm.setString(1, searchV);
                             preStm.setString(2, searchByCategory);
-                            
-                        }else{//chooser filter by Category but not choose category
+
+                        } else {//chooser filter by Category but not choose category
+                            preStm = con.prepareStatement(sqlQuery);
                             preStm.setString(1, searchV);
                         }
                     }
-                }else{//no filter
+                } else {//no filter
+                    preStm = con.prepareStatement(sqlQuery);
                     preStm.setString(1, searchV);
                 }
 

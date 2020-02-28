@@ -46,12 +46,9 @@ public class AddItemToCartServlet extends HttpServlet {
 
         String foodIDStr = request.getParameter("foodID");
 
-
         HttpSession session = request.getSession();
 
-        String searchVal = (String) session.getAttribute("searchVal");
-        String searchByFilter = (String) session.getAttribute("SearchByFilter");
-        String searchByCategory = (String) session.getAttribute("SearchByCategory");
+        Object pageListSearch = session.getAttribute("PAGES_LIST_SEARCH");
 
         String url = LOGIN_PAGE;
         try {
@@ -80,7 +77,7 @@ public class AddItemToCartServlet extends HttpServlet {
                 int quantity = itemsInCartDAO.checkExistedItem(foodID, cartID);
                 if (quantity != -1) {
                     itemsInCartDAO.updateQuantity(foodID, cartID, quantity);
-                }else{
+                } else {
                     ItemsInCartDTO itemsDTO
                             = new ItemsInCartDTO(foodID, price, 1, price, cartID);
 
@@ -89,11 +86,10 @@ public class AddItemToCartServlet extends HttpServlet {
 
                 url = BACK_HOME;
 
-                if (!searchVal.equals("") || searchByFilter != null
-                        || !searchByCategory.equals("Category")) {
+                if (pageListSearch != null) {
                     url = BACK_SEARCH;
                 }
-                
+
             }
 
         } catch (NamingException ex) {
