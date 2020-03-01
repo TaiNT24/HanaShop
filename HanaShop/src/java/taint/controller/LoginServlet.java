@@ -27,7 +27,7 @@ public class LoginServlet extends HttpServlet {
 
     private final String USER_PAGE = "StartupServlet";
     private final String ADMIN_PAGE = "AdminStartupServlet";
-    private final String INVALID = "LoginPage";
+    private final String INVALID = "Login.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -90,7 +90,6 @@ public class LoginServlet extends HttpServlet {
         } catch (NamingException ex) {
             log("NamingException_Login", ex.getCause());
         } finally {
-            System.out.println(url);
             RequestDispatcher rd =request.getRequestDispatcher(url);
             rd.forward(request, response);
 //            response.sendRedirect(url);

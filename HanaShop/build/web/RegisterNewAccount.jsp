@@ -77,10 +77,10 @@
 
         <p>If you have account: </p>
 
-        <a href="Login">Click here to login</a>
+        <a href="LoginPage">Click here to login</a>
         <br>
         <p>Or</p>
         <br>
-<!--        <a href="StartupServlet">Back home</a>-->
+        <a href="StartupServlet">Back home</a>
     </body>
 </html>

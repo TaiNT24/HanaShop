@@ -22,18 +22,15 @@ GO
 ----------------------------------------------------
 
 ---------------------------------------------------------------
-IF OBJECT_ID('trg_DecreQuantityWhenUserPayment', 'TR') IS NOT NULL
-	DROP trigger trg_DecreQuantityWhenUserPayment
-GO
-CREATE TRIGGER trg_DecreQuantityWhenUserPayment ON dbo.Cart AFTER UPDATE AS
+CREATE TRIGGER trg_SetStatusFood ON dbo.FoodAndDrink AFTER UPDATE AS
 BEGIN
-	DECLARE @CartID int
-	
-	SELECT @CartID = Inserted FROM Inserted --set CartID
-	
-	SELECT FoodID FROM dbo.ItemsInCart WHERE CartID=@CartID
-
-
-	
+	UPDATE dbo.FoodAndDrink SET Status='Inactive' 
+	WHERE Quantity = 0
+	;
+	-- if update status Active when quantity >0 => can't set Inactive status in web
 END
+GO
+-------------
+IF OBJECT_ID('trg_SetStatusFood', 'TR') IS NOT NULL
+	DROP trigger trg_SetStatusFood
 GO

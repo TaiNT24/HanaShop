@@ -15,10 +15,14 @@
         <title>Home Page</title>
     </head>
     <body >
+        <c:if test="${sessionScope.ROLE == 1}">
+            <c:redirect url="AdminStartupServlet"></c:redirect>
+        </c:if>
+
+
         <c:set var="products" value="${requestScope.LIST_PRODUCT}"/>
 
         <div class="container">
-
             <!--search form-->
             <jsp:include page="SearchForm.jsp"/>
 

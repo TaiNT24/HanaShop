@@ -13,6 +13,13 @@
         <title>History Page</title>
     </head>
     <body>
+        <c:if test="${sessionScope.ROLE == 1}">
+            <c:redirect url="AdminStartupServlet"></c:redirect>
+        </c:if>
+        <c:if test="${empty sessionScope.ROLE}">
+            <c:redirect url="StartupServlet"></c:redirect>
+        </c:if>
+        
         <div class="container">
             <jsp:include page="SearchHistoryForm.jsp"/>
 

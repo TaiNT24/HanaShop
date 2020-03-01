@@ -46,7 +46,7 @@ public class AdminSearchServlet extends HttpServlet {
         String searchByFilter = request.getParameter("SearchByFilter");
         String searchByCategory = request.getParameter("SearchByCategory");
         String priceVal = request.getParameter("priceVal");
-        
+
         HttpSession session = request.getSession();
 
         String pageStr = request.getParameter("page");
@@ -75,11 +75,13 @@ public class AdminSearchServlet extends HttpServlet {
                         if (!searchByCategory.equals("Category")) {
                             session.setAttribute("SearchByCategory", searchByCategory);
                             listSearch
-                                    = dao.adminSearchByCategory(searchVal
-                                            , searchByCategory, page);
+                                    = dao.adminSearchByCategory(searchVal,
+                                            searchByCategory, page);
 
                         } else { // choose filter, but not choose category => search by name
                             listSearch = dao.adminSearchByName(searchVal, page);
+                            session.removeAttribute("SearchByCategory");
+                            session.removeAttribute("SearchByFilter");
                         }
 
                     } else {
@@ -89,20 +91,22 @@ public class AdminSearchServlet extends HttpServlet {
                         session.setAttribute("priceVal", priceVal);
 
                         session.removeAttribute("SearchByCategory");
-                        listSearch = dao.adminSearchByPrice(searchVal
-                                , fromPrice, toPrice, page);
+                        listSearch = dao.adminSearchByPrice(searchVal,
+                                fromPrice, toPrice, page);
                     }
                 } else { // no filter => search by name
                     listSearch = dao.adminSearchByName(searchVal, page);
+                    session.removeAttribute("SearchByCategory");
+                    session.removeAttribute("SearchByFilter");
                 }
                 request.setAttribute("LIST_SEARCH", listSearch);
 
                 //set page
-                ArrayList<Integer> pageList = 
-                        dao.getPageListForAdminSearch(searchVal, searchByCategory
-                                , searchByFilter, priceVal);
+                ArrayList<Integer> pageList
+                        = dao.getPageListForAdminSearch(searchVal, searchByCategory,
+                                searchByFilter, priceVal);
                 session.setAttribute("PAGES_LIST_ADMIN_SEARCH", pageList);
-                
+
                 request.setAttribute("IS_SEARCH", "true");
                 url = SEARCH_SUCCESS;
             }

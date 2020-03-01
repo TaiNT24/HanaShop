@@ -80,6 +80,8 @@ public class SearchServlet extends HttpServlet {
 
                         } else { // choose filter, but not choose category => search by name
                             listSearch = dao.userSearchByName(searchVal, page);
+                            session.removeAttribute("SearchByCategory");
+                            session.removeAttribute("SearchByFilter");
                         }
 
                     } else {
@@ -89,21 +91,23 @@ public class SearchServlet extends HttpServlet {
                         session.setAttribute("priceVal", priceVal);
 
                         session.removeAttribute("SearchByCategory");
-                        listSearch = 
-                                dao.userSearchByPrice(searchVal
-                                        , fromPrice, toPrice, page);
-                        
+                        listSearch
+                                = dao.userSearchByPrice(searchVal,
+                                         fromPrice, toPrice, page);
+
                     }
                 } else { // no filter => search by name
                     listSearch = dao.userSearchByName(searchVal, page);
+                    session.removeAttribute("SearchByCategory");
+                    session.removeAttribute("SearchByFilter");
                 }
                 request.setAttribute("LIST_SEARCH", listSearch);
-                
+
                 // set page 
                 ArrayList<Integer> pageList
-                        = dao.getPageListForUserSearch(searchVal
-                                , searchByCategory, searchByFilter, priceVal);
-                
+                        = dao.getPageListForUserSearch(searchVal,
+                                 searchByCategory, searchByFilter, priceVal);
+
                 session.setAttribute("PAGES_LIST_SEARCH", pageList);
                 url = SEARCH_SUCCESS;
             }

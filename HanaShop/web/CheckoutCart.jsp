@@ -123,17 +123,19 @@
                     </div>
 
                     <!--form total payment-->
+                    <c:set var="totalPayment" value="${Math.round(totalPayment*10)/10.0}"/>            
+
                     <div class="col-sm-3 checkout-custom">
                         <div class="content-checkout">
                             <span class="text-primary text-lg-left">Total:</span>
-                            <h2 class="text-center text-danger ">${Math.round(totalPayment*10)/10.0} $</h2>
+                            <h2 class="text-center text-danger ">${totalPayment} $</h2>
 
                             <div style="margin-top: 3em;">
-                                <c:url var="paymentByCast" value="PaymentByCast">
-                                    <c:param name="userID" 
-                                             value="${sessionScope.USER_ID}"/>
+                                <c:url var="paymentByCast" value="CheckQuantityInStock">
                                     <c:param name="cartID" 
                                              value="${sessionScope.CART_ID}"/>
+                                    <c:param name="paymentMethod" 
+                                             value="PaymentByCast"/>
                                 </c:url>
 
                                 <a href="${paymentByCast}" 
@@ -141,10 +143,22 @@
                                     Payment by CASH
                                 </a>
                                 <br>
-                                <a href="" class="btn btn-success btn-lg btn-block">
+                                <c:url var="paymentByPaypal" value="CheckQuantityInStock">
+                                    <c:param name="userID" 
+                                             value="${sessionScope.USER_ID}"/>
+                                    <c:param name="cartID" 
+                                             value="${sessionScope.CART_ID}"/>
+                                    <c:param name="totalPayment" 
+                                             value="${totalPayment}"/>
+                                    <c:param name="paymentMethod" 
+                                             value="PaymentByPaypal"/>
+                                </c:url>
+                                
+                                <a href="${paymentByPaypal}"
+                                   class="btn btn-success btn-lg btn-block">
                                     Payment by PayPal
-
                                 </a>
+
                             </div>
                         </div>
                     </div>
@@ -172,9 +186,6 @@
                     Continue Shopping
                 </a>
             </c:if>
-
-
-
         </div>
 
     </body>

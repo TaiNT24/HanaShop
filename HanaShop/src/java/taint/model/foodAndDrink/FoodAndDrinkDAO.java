@@ -20,7 +20,7 @@ import taint.utils.DBUtils;
  */
 public class FoodAndDrinkDAO {
 
-    private final int RECORDS_IN_PAGE = 10;
+    private final int RECORDS_IN_PAGE = 20;
 
     //for normal user and guest
     public ArrayList<FoodAndDrinkDTO> loadActiveProduct(int page)

@@ -126,7 +126,8 @@ and open the template in the editor.
                         </button>
                     </li>
                     <li class="nav-item" style="margin-left: 1em">
-                        <a href="Logout" class="btn btn-info">Logout</a>
+                        <a href="Logout" 
+                           class="btn btn-info">Logout</a>
                     </li>
                 </c:if>
             </ul>

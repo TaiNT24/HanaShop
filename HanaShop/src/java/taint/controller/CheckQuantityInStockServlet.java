@@ -8,8 +8,9 @@ package taint.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,8 +18,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import taint.model.cart.CartDAO;
 import taint.model.foodAndDrink.FoodAndDrinkDAO;
 import taint.model.itemsInCart.ItemsInCartDAO;
 import taint.model.itemsInCart.ItemsInCartDTO;
@@ -27,10 +26,12 @@ import taint.model.itemsInCart.ItemsInCartDTO;
  *
  * @author nguye
  */
-@WebServlet(name = "PaymentByCastServlet", urlPatterns = {"/PaymentByCastServlet"})
-public class PaymentByCastServlet extends HttpServlet {
+@WebServlet(name = "CheckQuantityInStockServlet", urlPatterns = {"/CheckQuantityInStockServlet"})
+public class CheckQuantityInStockServlet extends HttpServlet {
 
-    private final String PAYMENT_SUCCESS = "CheckoutCart.jsp";
+    private final String PAYMENT_WITH_PAYPAL = "PaymentWithPayPal.jsp";
+    private final String PAYMENT_BY_CAST = "PaymentByCastServlet";
+    private final String ITEM_OUT_OF_STOCK = "CheckoutCart.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -45,39 +46,49 @@ public class PaymentByCastServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        Date now = new Date();
+        String cartIDStr = request.getParameter("cartID");
+        String totalPayment = request.getParameter("totalPayment");
+        String paymentMethod = request.getParameter("paymentMethod");
 
-        int cartID = (int) request.getAttribute("cartID");
-        String url = PAYMENT_SUCCESS;
+        String url = "";
 
         try {
+            int cartID = Integer.parseInt(cartIDStr);
 
-            CartDAO cartDAO = new CartDAO();
             ItemsInCartDAO itemsDAO = new ItemsInCartDAO();
             FoodAndDrinkDAO foodDAO = new FoodAndDrinkDAO();
 
             ArrayList<ItemsInCartDTO> listItem = itemsDAO.loadAllItemsOfCart(cartID);
+            Hashtable<Integer, Integer> listItemOutOfStock = new Hashtable<>();
 
-            cartDAO.UserPayment(cartID, now, "Cash on delivery");
-
-            //update quantity in stock
             for (int i = 0; i < listItem.size(); i++) {
+                int quantityUserBuy = listItem.get(i).getQuantity();
                 int foodID = listItem.get(i).getFoodID();
-                int quantity = listItem.get(i).getQuantity();
 
-                foodDAO.updateQuantity(foodID, quantity);
+                int quantityInStock = foodDAO.getQuantityFood(foodID);
+
+                if (quantityUserBuy > quantityInStock) {
+                    listItemOutOfStock.put(foodID, quantityInStock);
+                }
             }
+            if (listItemOutOfStock.isEmpty()) {
+                request.setAttribute("cartID", cartID);
+                
+                if (paymentMethod.equalsIgnoreCase("PaymentByCast")) {
+                    url = PAYMENT_BY_CAST;
+                } else {
+                    url = PAYMENT_WITH_PAYPAL;
+                    request.setAttribute("totalPayment", totalPayment);
+                }
 
-            HttpSession session = request.getSession();
-            session.removeAttribute("LIST_ITEMS_IN_CART");
-            session.removeAttribute("CART_ID");
-
-            request.setAttribute("PAYMENT_SUCCESSFUL", "TRUE");
-
+            } else {
+                url = ITEM_OUT_OF_STOCK;
+                request.setAttribute("ITEM_OUT_OF_STOCK", listItemOutOfStock);
+            }
         } catch (NamingException ex) {
-            log("NamingException_PaymentByCast", ex.getCause());
+            Logger.getLogger(CheckQuantityInStockServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            log("SQLException_PaymentByCast", ex.getCause());
+            Logger.getLogger(CheckQuantityInStockServlet.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);

@@ -6,10 +6,12 @@
 package taint.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -27,10 +29,8 @@ import taint.model.itemsInCart.ItemsInCartDTO;
  *
  * @author nguye
  */
-@WebServlet(name = "PaymentByCastServlet", urlPatterns = {"/PaymentByCastServlet"})
-public class PaymentByCastServlet extends HttpServlet {
-
-    private final String PAYMENT_SUCCESS = "CheckoutCart.jsp";
+@WebServlet(name = "PaymentWithPaypalServlet", urlPatterns = {"/PaymentWithPaypalServlet"})
+public class PaymentWithPaypalServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,11 +46,11 @@ public class PaymentByCastServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         Date now = new Date();
+        String cartIDStr = request.getParameter("cartID");
 
-        int cartID = (int) request.getAttribute("cartID");
-        String url = PAYMENT_SUCCESS;
-
+        String url = "CheckoutCart.jsp";
         try {
+            int cartID = Integer.parseInt(cartIDStr);
 
             CartDAO cartDAO = new CartDAO();
             ItemsInCartDAO itemsDAO = new ItemsInCartDAO();
@@ -58,7 +58,7 @@ public class PaymentByCastServlet extends HttpServlet {
 
             ArrayList<ItemsInCartDTO> listItem = itemsDAO.loadAllItemsOfCart(cartID);
 
-            cartDAO.UserPayment(cartID, now, "Cash on delivery");
+            cartDAO.UserPayment(cartID, now, "Payment With Paypal");
 
             //update quantity in stock
             for (int i = 0; i < listItem.size(); i++) {
@@ -75,9 +75,7 @@ public class PaymentByCastServlet extends HttpServlet {
             request.setAttribute("PAYMENT_SUCCESSFUL", "TRUE");
 
         } catch (NamingException ex) {
-            log("NamingException_PaymentByCast", ex.getCause());
         } catch (SQLException ex) {
-            log("SQLException_PaymentByCast", ex.getCause());
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);

@@ -9,9 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.HashMap;
 import javax.naming.NamingException;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -20,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-import taint.filterController.MappingText;
 import taint.model.foodAndDrink.FoodAndDrinkDAO;
 import taint.model.foodAndDrink.FoodAndDrinkDTO;
 import taint.model.historyUpdate.HistoryUpdateDAO;
@@ -64,7 +61,7 @@ public class UpdateFoodServlet extends HttpServlet {
         boolean isUpdate;
         String detailUpdate;
 
-        String url = "";
+        String url = "StartupServlet";
         try {
             int foodID = Integer.parseInt(foodIDStr);
 
@@ -96,7 +93,6 @@ public class UpdateFoodServlet extends HttpServlet {
                 } else {
                     int lastIndex = img.lastIndexOf(".");
                     int lastIndexOldImg = oldImg.lastIndexOf(".");
-                    int lastIndexOldImgFrom = oldImg.lastIndexOf("/");
 
                     String newExt = "." + img.substring(lastIndex + 1);// duoi
 

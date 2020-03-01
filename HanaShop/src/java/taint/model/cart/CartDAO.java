@@ -87,7 +87,7 @@ public class CartDAO implements Serializable {
         return false;
     }
 
-    public boolean paymentByCash(int cartID, Date datePayment)
+    public boolean UserPayment(int cartID, Date datePayment, String paymentMethod)
             throws NamingException, SQLException {
 
         Connection con = null;
@@ -103,7 +103,7 @@ public class CartDAO implements Serializable {
                 
                 String dateInsertDB = Utils.formatDateToString(datePayment);
 
-                preStm.setString(1, "Cash on delivery");
+                preStm.setString(1, paymentMethod);
                 preStm.setString(2, dateInsertDB);                
                 preStm.setInt(3, cartID);
 
